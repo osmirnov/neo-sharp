@@ -2,12 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using NeoSharp.BinarySerialization;
+using NeoSharp.Core.Blockchain.Repositories;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Models;
 using NeoSharp.Core.Models.OperationManger;
 using NeoSharp.Core.SmartContract;
 using NeoSharp.Core.Types;
+using NeoSharp.Cryptography;
+using NeoSharp.Types;
 
 namespace NeoSharp.Core.Test.Serializers
 {
@@ -16,14 +20,12 @@ namespace NeoSharp.Core.Test.Serializers
     {
         private Random _random;
         private IBinarySerializer _serializer;
-        private IBinaryDeserializer _deserializer;
 
         [TestInitialize]
         public void WarmUpSerializer()
         {
             _random = new Random(Environment.TickCount);
-            _serializer = new BinarySerializer(typeof(BlockHeader).Assembly, typeof(UtBinarySerializer).Assembly);
-            _deserializer = new BinaryDeserializer(typeof(BlockHeader).Assembly, typeof(UtBinarySerializer).Assembly);
+            _serializer = new BinarySerializer(typeof(BlockHeader).Assembly, typeof(UtBinarySerializer).Assembly, typeof(Fixed8).Assembly);
         }
 
         [TestMethod]
@@ -32,7 +34,7 @@ namespace NeoSharp.Core.Test.Serializers
             var original = RandomTransactionOutputs(1).FirstOrDefault();
 
             var ret = _serializer.Serialize(original);
-            var copy = _deserializer.Deserialize<TransactionOutput>(ret);
+            var copy = _serializer.Deserialize<TransactionOutput>(ret);
 
             Assert.AreEqual(original.AssetId, copy.AssetId);
             Assert.AreEqual(original.ScriptHash, copy.ScriptHash);
@@ -52,8 +54,8 @@ namespace NeoSharp.Core.Test.Serializers
             FillRandomTx(original);
 
             var ret = _serializer.Serialize(original);
-            var copy = _deserializer.Deserialize<Transaction>(ret);
-            var copy2 = _deserializer.Deserialize<InvocationTransaction>(ret);
+            var copy = _serializer.Deserialize<Transaction>(ret);
+            var copy2 = _serializer.Deserialize<InvocationTransaction>(ret);
 
             // Check exclusive data
 
@@ -80,8 +82,8 @@ namespace NeoSharp.Core.Test.Serializers
             FillRandomTx(original);
 
             var ret = _serializer.Serialize(original);
-            var copy = _deserializer.Deserialize<Transaction>(ret);
-            var copy2 = _deserializer.Deserialize<MinerTransaction>(ret);
+            var copy = _serializer.Deserialize<Transaction>(ret);
+            var copy2 = _serializer.Deserialize<MinerTransaction>(ret);
 
             // Check exclusive data
 
@@ -113,8 +115,8 @@ namespace NeoSharp.Core.Test.Serializers
             FillRandomTx(original);
 
             var ret = _serializer.Serialize(original);
-            var copy = _deserializer.Deserialize<Transaction>(ret);
-            var copy2 = _deserializer.Deserialize<RegisterTransaction>(ret);
+            var copy = _serializer.Deserialize<Transaction>(ret);
+            var copy2 = _serializer.Deserialize<RegisterTransaction>(ret);
 
             // Check exclusive data
 
@@ -147,8 +149,8 @@ namespace NeoSharp.Core.Test.Serializers
             FillRandomTx(original);
 
             var ret = _serializer.Serialize(original);
-            var copy = _deserializer.Deserialize<Transaction>(ret);
-            var copy2 = _deserializer.Deserialize<EnrollmentTransaction>(ret);
+            var copy = _serializer.Deserialize<Transaction>(ret);
+            var copy2 = _serializer.Deserialize<EnrollmentTransaction>(ret);
 
             // Check exclusive data
 
@@ -174,8 +176,8 @@ namespace NeoSharp.Core.Test.Serializers
             FillRandomTx(original);
 
             var ret = _serializer.Serialize(original);
-            var copy = _deserializer.Deserialize<Transaction>(ret);
-            var copy2 = _deserializer.Deserialize<ContractTransaction>(ret);
+            var copy = _serializer.Deserialize<Transaction>(ret);
+            var copy2 = _serializer.Deserialize<ContractTransaction>(ret);
 
             // Check base data
 
@@ -194,8 +196,8 @@ namespace NeoSharp.Core.Test.Serializers
             FillRandomTx(original);
 
             var ret = _serializer.Serialize(original);
-            var copy = _deserializer.Deserialize<Transaction>(ret);
-            var copy2 = _deserializer.Deserialize<StateTransaction>(ret);
+            var copy = _serializer.Deserialize<Transaction>(ret);
+            var copy2 = _serializer.Deserialize<StateTransaction>(ret);
 
             // Check exclusive data
 
@@ -239,8 +241,8 @@ namespace NeoSharp.Core.Test.Serializers
             FillRandomTx(original);
 
             var ret = _serializer.Serialize(original);
-            var copy = _deserializer.Deserialize<Transaction>(ret);
-            var copy2 = _deserializer.Deserialize<PublishTransaction>(ret);
+            var copy = _serializer.Deserialize<Transaction>(ret);
+            var copy2 = _serializer.Deserialize<PublishTransaction>(ret);
 
             // Check exclusive data
 
@@ -275,8 +277,8 @@ namespace NeoSharp.Core.Test.Serializers
             FillRandomTx(original);
 
             var ret = _serializer.Serialize(original);
-            var copy = _deserializer.Deserialize<Transaction>(ret);
-            var copy2 = _deserializer.Deserialize<IssueTransaction>(ret);
+            var copy = _serializer.Deserialize<Transaction>(ret);
+            var copy2 = _serializer.Deserialize<IssueTransaction>(ret);
 
             // Check base data
 
@@ -295,8 +297,8 @@ namespace NeoSharp.Core.Test.Serializers
             FillRandomTx(original);
 
             var ret = _serializer.Serialize(original);
-            var copy = _deserializer.Deserialize<Transaction>(ret);
-            var copy2 = _deserializer.Deserialize<ClaimTransaction>(ret);
+            var copy = _serializer.Deserialize<Transaction>(ret);
+            var copy2 = _serializer.Deserialize<ClaimTransaction>(ret);
 
             // Check exclusive data
 
@@ -313,7 +315,7 @@ namespace NeoSharp.Core.Test.Serializers
         private void FillRandomTx(Transaction tx)
         {
             var witnessOperationsManager = new WitnessOperationsManager(Crypto.Default);
-            var transactionOperationsManager = new TransactionSigner(Crypto.Default, witnessOperationsManager);
+            var transactionOperationsManager = new TransactionOperationManager(Crypto.Default, this._serializer, witnessOperationsManager, new Mock<ITransactionRepository>().Object, new Mock<IAssetRepository>().Object, new TransactionContext());
 
             tx.Attributes = RandomTransactionAtrributes().ToArray();
             tx.Inputs = RandomCoinReferences(_random.Next(1, 255)).ToArray();
@@ -326,7 +328,7 @@ namespace NeoSharp.Core.Test.Serializers
         void EqualTx(Transaction original, params Transaction[] copies)
         {
             var witnessOperationsManager = new WitnessOperationsManager(Crypto.Default);
-            var transactionOperationsManager = new TransactionSigner(Crypto.Default, witnessOperationsManager);
+            var transactionOperationsManager = new TransactionOperationManager(Crypto.Default, this._serializer, witnessOperationsManager, new Mock<ITransactionRepository>().Object, new Mock<IAssetRepository>().Object, new TransactionContext());
 
             foreach (var copy in copies)
             {
@@ -356,7 +358,7 @@ namespace NeoSharp.Core.Test.Serializers
             foreach (var ori in RandomTransactionAtrributes(255))
             {
                 var ret = _serializer.Serialize(ori);
-                var copy = _deserializer.Deserialize<TransactionAttribute>(ret);
+                var copy = _serializer.Deserialize<TransactionAttribute>(ret);
 
                 Assert.AreEqual(ori.Usage, copy.Usage);
                 Assert.IsTrue(ori.Data.SequenceEqual(copy.Data));

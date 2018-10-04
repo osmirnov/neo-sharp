@@ -5,64 +5,29 @@ using System.Collections.Generic;
 using System.Linq;
 using NeoSharp.Core.Models;
 using NeoSharp.Core.Models.OperationManger;
-using NeoSharp.Core.Types;
+using NeoSharp.Types;
 
 namespace NeoSharp.Core.Blockchain.Processing
 {
-    public class TransactionPool : ITransactionPool
+    public partial class TransactionPool : ITransactionPool
     {
-        private readonly ITransactionSigner _transactionSigner;
-        private readonly ITransactionVerifier _transactionVerifier;
-
-        private class TimeStampedTransaction
-        {
-            public Transaction Transaction { get; }
-
-            public DateTime CreatedAt { get; }
-
-            public TimeStampedTransaction(Transaction transaction)
-            {
-                Transaction = transaction;
-                CreatedAt = DateTime.UtcNow;
-            }
-        }
-
-        private class TimeStampedTransactionComparer : IComparer<TimeStampedTransaction>
-        {
-            private readonly IComparer<Transaction> _comparer;
-            private readonly Comparer<DateTime> _createdAtComparer = Comparer<DateTime>.Default;
-
-            public TimeStampedTransactionComparer(IComparer<Transaction> comparer = null)
-            {
-                _comparer = comparer ?? Comparer<Transaction>.Default;
-            }
-
-            public int Compare(TimeStampedTransaction a, TimeStampedTransaction b)
-            {
-                if (a == b) return 0;
-                if (a == null) return -1;
-                if (b == null) return 1;
-
-                var transactionComparisonResult = _comparer.Compare(a.Transaction, b.Transaction);
-
-                return transactionComparisonResult == 0
-                    ? _createdAtComparer.Compare(a.CreatedAt, b.CreatedAt)
-                    : transactionComparisonResult;
-            }
-        }
-
+        #region Private Fields
         private const int DefaultCapacity = 50_000;
 
-        private readonly ConcurrentDictionary<UInt256, TimeStampedTransaction> _transactionPool = new ConcurrentDictionary<UInt256, TimeStampedTransaction>();
+        private readonly ITransactionOperationsManager _transactionOperationsManager;
         private readonly IComparer<TimeStampedTransaction> _comparer;
+        private readonly ConcurrentDictionary<UInt256, TimeStampedTransaction> _transactionPool = new ConcurrentDictionary<UInt256, TimeStampedTransaction>();
+        #endregion
 
-        public TransactionPool(ITransactionSigner transactionSigner, ITransactionVerifier transactionVerifier, IComparer<Transaction> comparer = null)
+        #region Constructor 
+        public TransactionPool(ITransactionOperationsManager transactionOperationsManager, IComparer<Transaction> comparer = null)
         {
-            _transactionSigner = transactionSigner;
-            _transactionVerifier = transactionVerifier;
+            _transactionOperationsManager = transactionOperationsManager;
             _comparer = new TimeStampedTransactionComparer(comparer);
         }
+        #endregion
 
+        #region ITransactionPool implementation
         public int Size => _transactionPool.Count;
 
         public int Capacity => DefaultCapacity;
@@ -71,9 +36,9 @@ namespace NeoSharp.Core.Blockchain.Processing
         {
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
-            this._transactionSigner.Sign(transaction);
+            this._transactionOperationsManager.Sign(transaction);
 
-            if (!this._transactionVerifier.Verify(transaction))
+            if (!this._transactionOperationsManager.Verify(transaction))
             {
                 throw new InvalidOperationException($"The transaction with hash \"{transaction.Hash}\" was not passed verification.");
             }
@@ -117,7 +82,9 @@ namespace NeoSharp.Core.Blockchain.Processing
         {
             return GetEnumerator();
         }
+        #endregion
 
+        #region Private Methods 
         private IEnumerable<Transaction> GetTransactions()
         {
             return _transactionPool
@@ -125,5 +92,6 @@ namespace NeoSharp.Core.Blockchain.Processing
                 .OrderBy(_ => _, _comparer)
                 .Select(tst => tst.Transaction);
         }
+        #endregion
     }
 }

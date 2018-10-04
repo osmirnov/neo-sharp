@@ -8,26 +8,23 @@ namespace NeoSharp.Application.Controllers
     {
         #region Private fields
 
-        private readonly IServer _server;
+        private readonly IServerContext _serverContext;
         private readonly INetworkManager _networkManager;
-        private readonly IConsoleWriter _consoleWriter;
-        private readonly IConsoleReader _consoleReader;
+        private readonly IConsoleHandler _consoleHandler;
 
         #endregion
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="server">Server</param>
+        /// <param name="serverContext">Server context</param>
         /// <param name="networkManager">Network manages</param>
-        /// <param name="consoleWriter">Console writter</param>
-        /// <param name="consoleReader">Console reader</param>
-        public PromptNetworkController(IServer server, INetworkManager networkManager, IConsoleWriter consoleWriter, IConsoleReader consoleReader)
+        /// <param name="consoleHandler">Console writter</param>
+        public PromptNetworkController(IServerContext serverContext, INetworkManager networkManager, IConsoleHandler consoleHandler)
         {
-            _server = server;
+            _serverContext = serverContext;
             _networkManager = networkManager;
-            _consoleReader = consoleReader;
-            _consoleWriter = consoleWriter;
+            _consoleHandler = consoleHandler;
         }
 
         /// <summary>
@@ -36,13 +33,13 @@ namespace NeoSharp.Application.Controllers
         [PromptCommand("nodes", Category = "Network", Help = "Get nodes information")]
         public void NodesCommand()
         {
-            var peers = _server.ConnectedPeers;
+            var peers = _serverContext.ConnectedPeers;
 
-            _consoleWriter.WriteLine("Connected: " + peers.Count);
+            _consoleHandler.WriteLine("Connected: " + peers.Count);
 
             foreach (var peer in peers)
             {
-                _consoleWriter.WriteLine(peer.ToString());
+                _consoleHandler.WriteLine(peer.ToString());
             }
         }
 

@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,17 +11,15 @@ namespace NeoSharp.Core.Network
 {
     public class Server : IServer, IBroadcaster, IDisposable
     {
-        #region Variables
+        #region Private Fields
 
         private bool _isRunning;
         private readonly ILogger<Server> _logger;
         private readonly IPeerMessageListener _peerMessageListener;
+        private readonly IServerContext _serverContext;
         private readonly IPeerFactory _peerFactory;
         private readonly IPeerListener _peerListener;
         private readonly NetworkAcl _acl;
-
-        // if we successfully connect with a peer it is inserted into this list
-        private readonly ConcurrentBag<IPeer> _connectedPeers;
 
         // if we can't connect to a peer it is inserted into this list
         // ReSharper disable once NotAccessedField.Local
@@ -43,6 +39,7 @@ namespace NeoSharp.Core.Network
         /// <param name="peerFactory">Factory to create peers from endpoints</param>
         /// <param name="peerListener">Listener to accept peer connections</param>
         /// <param name="peerMessageListener">PeerMessageListener</param>
+        /// <param name="serverContext">Server context.</param>
         /// <param name="logger">Logger</param>
         public Server(
             NetworkConfig config,
@@ -50,6 +47,7 @@ namespace NeoSharp.Core.Network
             IPeerFactory peerFactory,
             IPeerListener peerListener,
             IPeerMessageListener peerMessageListener,
+            IServerContext serverContext,
             ILogger<Server> logger)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
@@ -61,10 +59,10 @@ namespace NeoSharp.Core.Network
 
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _peerMessageListener = peerMessageListener ?? throw new ArgumentNullException(nameof(peerMessageListener));
+            _serverContext = serverContext;
 
             _peerListener.OnPeerConnected += PeerConnected;
 
-            _connectedPeers = new ConcurrentBag<IPeer>();
             _failedPeers = new List<IPEndPoint>();
 
             // TODO #364: Change after port forwarding implementation
@@ -74,9 +72,6 @@ namespace NeoSharp.Core.Network
         #endregion
 
         #region IServer implementation
-
-        /// <inheritdoc />
-        public IReadOnlyCollection<IPeer> ConnectedPeers => _connectedPeers.Where(x => x.IsConnected).ToArray();
 
         /// <inheritdoc />
         public void Start()
@@ -125,32 +120,39 @@ namespace NeoSharp.Core.Network
                 }
             });
         }
-
         #endregion
 
         #region IBroadcaster implementation
-
         /// <inheritdoc />
         public void Broadcast(Message message, IPeer source = null)
         {
-            Parallel.ForEach(_connectedPeers.Where(p => p != source), p => p.Send(message));
+            Parallel.ForEach(_serverContext.ConnectedPeers, peer =>
+            {
+                if (source == null)
+                {
+                    peer.Send(message);
+                }
+                else
+                {
+                    if (!peer.EndPoint.Equals(source.EndPoint))
+                    {
+                        peer.Send(message);
+                    }
+                }
+            });
         }
-
         #endregion
 
         #region IDisposable Implementation
-
         /// <inheritdoc />
         public void Dispose()
         {
             Stop();
             _peerListener.OnPeerConnected -= PeerConnected;
         }
-
         #endregion
 
         #region Private Methods 
-
         /// <summary>
         /// Peer connected Event
         /// </summary>
@@ -165,7 +167,7 @@ namespace NeoSharp.Core.Network
                     throw new UnauthorizedAccessException($"The endpoint \"{peer.EndPoint}\" is prohibited by ACL.");
                 }
 
-                _connectedPeers.Add(peer);
+                _serverContext.ConnectedPeers.Add(peer);
                 _peerMessageListener.StartFor(peer, _messageListenerTokenSource.Token);
             }
             catch (Exception e)
@@ -180,14 +182,13 @@ namespace NeoSharp.Core.Network
         /// </summary>
         private void DisconnectPeers()
         {
-            foreach (var peer in _connectedPeers)
+            foreach (var peer in _serverContext.ConnectedPeers)
             {
                 peer.Disconnect();
             }
 
-            _connectedPeers.Clear();
+            _serverContext.ConnectedPeers.Clear();
         }
-
         #endregion
     }
 }
