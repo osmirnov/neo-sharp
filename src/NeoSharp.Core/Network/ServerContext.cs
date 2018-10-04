@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Concurrent;
 using System.Reflection;
 using NeoSharp.Core.Cryptography;
 using NeoSharp.Core.Extensions;
 using NeoSharp.Core.Messaging.Messages;
+using NeoSharp.Cryptography;
 
 namespace NeoSharp.Core.Network
 {
@@ -22,12 +24,15 @@ namespace NeoSharp.Core.Network
         {
             get
             {
-                this._version.Timestamp = DateTime.UtcNow.ToTimestamp();
-                this._version.CurrentBlockIndex = this._blockchainContext.CurrentBlock?.Index ?? 0;
+                _version.Timestamp = DateTime.UtcNow.ToTimestamp();
+                _version.CurrentBlockIndex = _blockchainContext.CurrentBlock?.Index ?? 0;
 
                 return _version;
             }
         }
+
+        /// <inheritdoc />
+        public ConcurrentBag<IPeer> ConnectedPeers { get; }
         #endregion
 
         #region Constructor
@@ -39,7 +44,7 @@ namespace NeoSharp.Core.Network
         public ServerContext(NetworkConfig config, IBlockchainContext blockchainContext)
         {
             if (config == null) throw new ArgumentNullException(nameof(config));
-            this._blockchainContext = blockchainContext ?? throw new ArgumentNullException(nameof(blockchainContext));
+            _blockchainContext = blockchainContext ?? throw new ArgumentNullException(nameof(blockchainContext));
 
             _version = new VersionPayload
             {
@@ -49,9 +54,11 @@ namespace NeoSharp.Core.Network
                 Port = config.Port,
                 Nonce = BitConverter.ToUInt32(Crypto.Default.GenerateRandomBytes(4), 0),
                 UserAgent = $"/NEO-Sharp:{Assembly.GetExecutingAssembly().GetName().Version.ToString(3)}/",
-                CurrentBlockIndex = this._blockchainContext.CurrentBlock?.Index ?? 0,
+                CurrentBlockIndex = _blockchainContext.CurrentBlock?.Index ?? 0,
                 Relay = true
             };
+
+            ConnectedPeers = new ConcurrentBag<IPeer>();
         }
         #endregion
     }

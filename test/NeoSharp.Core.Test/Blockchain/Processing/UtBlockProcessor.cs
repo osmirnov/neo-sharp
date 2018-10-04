@@ -6,13 +6,14 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NeoSharp.BinarySerialization;
 using NeoSharp.Core.Blockchain.Processing;
-using NeoSharp.Core.Extensions;
 using NeoSharp.Core.Helpers;
 using NeoSharp.Core.Models;
 using NeoSharp.Core.Models.OperationManger;
+using NeoSharp.Core.Network;
 using NeoSharp.Core.Persistence;
-using NeoSharp.Core.Types;
 using NeoSharp.TestHelpers;
+using NeoSharp.Types;
+using NeoSharp.Types.ExtensionMethods;
 
 namespace NeoSharp.Core.Test.Blockchain.Processing
 {
@@ -50,7 +51,7 @@ namespace NeoSharp.Core.Test.Blockchain.Processing
             var block = new Block();
 
             this.AutoMockContainer
-                .GetMock<IBlockSigner>()
+                .GetMock<ISigner<Block>>()
                 .Setup(x => x.Sign(block))
                 .Callback<Block>(x => x.Hash = null);
 
@@ -66,7 +67,7 @@ namespace NeoSharp.Core.Test.Blockchain.Processing
             var block = new Block();
 
             this.AutoMockContainer
-                .GetMock<IBlockSigner>()
+                .GetMock<ISigner<Block>>()
                 .Setup(x => x.Sign(block))
                 .Callback<Block>(x => x.Hash = UInt256.Zero);
 
@@ -200,6 +201,11 @@ namespace NeoSharp.Core.Test.Blockchain.Processing
                 .Returns(true);
 
             var blockPersisterMock = this.AutoMockContainer.GetMock<IBlockPersister>();
+
+            this.AutoMockContainer
+                .GetMock<IBlockchainContext>()
+                .SetupGet(x => x.CurrentBlock)
+                .Returns(currentBlock);
 
             var testee = this.AutoMockContainer.Create<BlockProcessor>();
 

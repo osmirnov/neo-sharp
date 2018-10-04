@@ -6,7 +6,7 @@ using NeoSharp.Core.Messaging.Messages;
 using NeoSharp.Core.Models;
 using NeoSharp.Core.Models.OperationManger;
 using NeoSharp.Core.Network;
-using NeoSharp.Core.Types;
+using NeoSharp.Types;
 
 namespace NeoSharp.Core.Blockchain.Processing
 {
@@ -16,7 +16,7 @@ namespace NeoSharp.Core.Blockchain.Processing
 
         private readonly IBlockPool _blockPool;
         private readonly IAsyncDelayer _asyncDelayer;
-        private readonly IBlockSigner _blockSigner;
+        private readonly ISigner<Block> _blockSigner;
         private readonly IBlockPersister _blockPersister;
         private readonly IBlockchainContext _blockchainContext;
         private readonly IBroadcaster _broadcaster;
@@ -27,7 +27,7 @@ namespace NeoSharp.Core.Blockchain.Processing
         public BlockProcessor(
             IBlockPool blockPool,
             IAsyncDelayer asyncDelayer,
-            IBlockSigner blockSigner,
+            ISigner<Block> blockSigner,
             IBlockPersister blockPersister, 
             IBlockchainContext blockchainContext, 
             IBroadcaster broadcaster)
@@ -44,7 +44,7 @@ namespace NeoSharp.Core.Blockchain.Processing
         // because the logic to get that too complicated 
         public void Run(Block currentBlock)
         {
-            this._blockchainContext.CurrentBlock = currentBlock;
+            _blockchainContext.CurrentBlock = currentBlock;
 
             var cancellationToken = _cancellationTokenSource.Token;
 
@@ -52,13 +52,13 @@ namespace NeoSharp.Core.Blockchain.Processing
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    if (this._blockchainContext.IsPeerConnected && this._blockchainContext.NeedPeerSync && !this._blockchainContext.IsSyncing)
+                    if (_blockchainContext.IsPeerConnected && _blockchainContext.NeedPeerSync && !_blockchainContext.IsSyncing)
                     {
-                        this._broadcaster.Broadcast(new GetBlocksMessage(this._blockchainContext.CurrentBlock.Hash));
-                        this._blockchainContext.IsSyncing = true;
+                        _broadcaster.Broadcast(new GetBlocksMessage(_blockchainContext.CurrentBlock.Hash));
+                        _blockchainContext.IsSyncing = true;
                     }
 
-                    var nextBlockHeight = currentBlock?.Index + 1 ?? 0;
+                    var nextBlockHeight = this._blockchainContext.CurrentBlock?.Index + 1 ?? 0;
 
                     if (!_blockPool.TryGet(nextBlockHeight, out var block))
                     {
@@ -66,10 +66,10 @@ namespace NeoSharp.Core.Blockchain.Processing
                         continue;
                     }
 
-                    await this._blockPersister.Persist(block);
+                    await _blockPersister.Persist(block);
 
                     _blockPool.Remove(nextBlockHeight);
-                    this._blockchainContext.CurrentBlock = block;
+                    _blockchainContext.CurrentBlock = block;
 
 
                     OnBlockProcessed?.Invoke(this, block);
@@ -96,12 +96,15 @@ namespace NeoSharp.Core.Blockchain.Processing
                 throw new InvalidOperationException($"The block \"{blockHash.ToString(true)}\" was already queued to be added.");
             }
 
-            if (!await this._blockPersister.IsBlockPersisted(block))
+            if (!await _blockPersister.IsBlockPersisted(block))
             {
                 _blockPool.Add(block);
             }
         }
 
+        /// <summary>
+        /// Free resources
+        /// </summary>
         public void Dispose()
         {
             _cancellationTokenSource.Cancel();
