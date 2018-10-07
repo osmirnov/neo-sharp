@@ -12,6 +12,8 @@ namespace NeoSharp.Core.Blockchain.Processing
 {
     public class BlockProcessor : IBlockProcessor
     {
+        #region Private Fields 
+
         private static readonly TimeSpan DefaultBlockPollingInterval = TimeSpan.FromMilliseconds(100);
 
         private readonly IBlockPool _blockPool;
@@ -22,14 +24,16 @@ namespace NeoSharp.Core.Blockchain.Processing
         private readonly IBroadcaster _broadcaster;
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        public event EventHandler<Block> OnBlockProcessed;
+        #endregion
+
+        #region Constructor 
 
         public BlockProcessor(
             IBlockPool blockPool,
             IAsyncDelayer asyncDelayer,
             ISigner<Block> blockSigner,
-            IBlockPersister blockPersister, 
-            IBlockchainContext blockchainContext, 
+            IBlockPersister blockPersister,
+            IBlockchainContext blockchainContext,
             IBroadcaster broadcaster)
         {
             _blockPool = blockPool ?? throw new ArgumentNullException(nameof(blockPool));
@@ -40,27 +44,30 @@ namespace NeoSharp.Core.Blockchain.Processing
             _broadcaster = broadcaster ?? throw new ArgumentNullException(nameof(broadcaster));
         }
 
+        #endregion
+
+        #region IBlockProcessor implementation
         // TODO #384: We will read the current block from Blockchain
         // because the logic to get that too complicated 
-        public void Run(Block currentBlock)
+        /// <inheritdoc />
+        public void Run()
         {
-            _blockchainContext.CurrentBlock = currentBlock;
-
             var cancellationToken = _cancellationTokenSource.Token;
 
             Task.Factory.StartNew(async () =>
             {
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    if (_blockchainContext.IsPeerConnected && _blockchainContext.NeedPeerSync && !_blockchainContext.IsSyncing)
+                    var block = _blockchainContext.CurrentBlock;
+                    var nextBlockHeight = block?.Index + 1U ?? 0U;
+
+                    if (block != null && _blockchainContext.IsPeerConnected && _blockchainContext.NeedPeerSync && !_blockchainContext.IsSyncing)
                     {
-                        _broadcaster.Broadcast(new GetBlocksMessage(_blockchainContext.CurrentBlock.Hash));
+                        _broadcaster.Broadcast(new GetBlocksMessage(block.Hash));
                         _blockchainContext.IsSyncing = true;
                     }
 
-                    var nextBlockHeight = this._blockchainContext.CurrentBlock?.Index + 1 ?? 0;
-
-                    if (!_blockPool.TryGet(nextBlockHeight, out var block))
+                    if (!_blockPool.TryGet(nextBlockHeight, out block))
                     {
                         await _asyncDelayer.Delay(DefaultBlockPollingInterval, cancellationToken);
                         continue;
@@ -68,15 +75,13 @@ namespace NeoSharp.Core.Blockchain.Processing
 
                     await _blockPersister.Persist(block);
 
+                    // TODO [CheckWithTeam] [AboimPinto]: Maybe when we get the block out of the block we can remove it and this line will not be necessary
                     _blockPool.Remove(nextBlockHeight);
-                    _blockchainContext.CurrentBlock = block;
-
-
-                    OnBlockProcessed?.Invoke(this, block);
                 }
             }, cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
+        /// <inheritdoc />
         public async Task AddBlock(Block block)
         {
             if (block == null) throw new ArgumentNullException(nameof(block));
@@ -102,13 +107,13 @@ namespace NeoSharp.Core.Blockchain.Processing
             }
         }
 
-        /// <summary>
-        /// Free resources
-        /// </summary>
+        /// <inheritdoc />
         public void Dispose()
         {
             _cancellationTokenSource.Cancel();
             _cancellationTokenSource.Dispose();
         }
+
+        #endregion
     }
 }
