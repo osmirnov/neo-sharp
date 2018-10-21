@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -107,10 +108,25 @@ namespace NeoSharp.Core.Network
         /// <inheritdoc />
         public void ConnectToPeers(params EndPoint[] endPoints)
         {
-            Parallel.ForEach(endPoints, async ep =>
+            var rand = new Random(Environment.TickCount);
+            var connectedEndPoints = _serverContext.ConnectedPeers.Keys.ToArray();
+            var preferredEndPoints = endPoints
+                .Concat(_peerEndPoints)
+                .Except(connectedEndPoints)
+                .Distinct()
+                .OrderBy(_ => rand.Next())
+                .Take(Math.Max(0, _serverContext.MaxConnectedPeers - connectedEndPoints.Length))
+                .ToArray();
+
+            Parallel.ForEach(preferredEndPoints, async ep =>
             {
                 try
                 {
+                    if (_serverContext.ConnectedPeers.ContainsKey(ep))
+                    {
+                        return;
+                    }
+
                     var peer = await _peerFactory.ConnectTo(ep);
                     PeerConnected(this, peer);
                 }
@@ -126,7 +142,7 @@ namespace NeoSharp.Core.Network
         /// <inheritdoc />
         public void Broadcast(Message message, IPeer source = null)
         {
-            Parallel.ForEach(_serverContext.ConnectedPeers, peer =>
+            Parallel.ForEach(_serverContext.ConnectedPeers.Values, peer =>
             {
                 if (source == null)
                 {
@@ -167,7 +183,9 @@ namespace NeoSharp.Core.Network
                     throw new UnauthorizedAccessException($"The endpoint \"{peer.EndPoint}\" is prohibited by ACL.");
                 }
 
-                _serverContext.ConnectedPeers.Add(peer);
+                if (!_serverContext.ConnectedPeers.TryAdd(peer.EndPoint, peer)) return;
+
+                peer.OnDisconnect += (s, e) => _serverContext.ConnectedPeers.TryRemove(peer.EndPoint, out _);
                 _peerMessageListener.StartFor(peer, _messageListenerTokenSource.Token);
             }
             catch (Exception e)
@@ -182,12 +200,10 @@ namespace NeoSharp.Core.Network
         /// </summary>
         private void DisconnectPeers()
         {
-            foreach (var peer in _serverContext.ConnectedPeers)
+            foreach (var peer in _serverContext.ConnectedPeers.Values)
             {
                 peer.Disconnect();
             }
-
-            _serverContext.ConnectedPeers.Clear();
         }
         #endregion
     }

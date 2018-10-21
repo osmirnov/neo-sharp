@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using NeoSharp.Core.Exceptions;
 using NeoSharp.Core.Extensions;
 using NeoSharp.Core.Logging;
 using NeoSharp.Core.Models;
@@ -36,10 +37,9 @@ namespace NeoSharp.Core.Blockchain.Processing
 
             if (!_blockPool.TryAdd(block.Index, block))
             {
-                throw new InvalidOperationException($"The block with height \"{block.Index}\" was already queued to be added.");
+                throw new BlockAlreadyQueuedException($"The block with height \"{block.Index}\" was already queued to be added.");
             }
 
-            _logger.LogInformation($"BlockPool count: {_blockPool.Count}");
             OnAdded?.Invoke(this, block);
 
             PrioritizeBlocks();
@@ -65,7 +65,7 @@ namespace NeoSharp.Core.Blockchain.Processing
             _blockPool.Keys
                 .AsParallel()
                 .OrderByDescending(_ => _)
-                .Take(Math.Max(Capacity - Size, 0))
+                .Take(Math.Max(Size - Capacity, 0))
                 .ToArray()
                 .ForEach(Remove);
         }

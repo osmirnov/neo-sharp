@@ -13,6 +13,8 @@ namespace NeoSharp.Core.Network
         /// <summary>
         /// Connected peers
         /// </summary>
-        ConcurrentBag<IPeer> ConnectedPeers { get; }
+        ConcurrentDictionary<EndPoint, IPeer> ConnectedPeers { get; }
+
+        ushort MaxConnectedPeers { get; }
     }
 }
