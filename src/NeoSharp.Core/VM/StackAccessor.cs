@@ -22,27 +22,27 @@ namespace NeoSharp.Core.VM
             _stack = engine.CurrentContext.EvaluationStack;
         }
 
-        public void Push(bool value) => _stack.Push(_engine.CreateBool(value));
+        public void Push(bool value) => _stack.Push(value);
 
-        public void Push(int value) => _stack.Push(_engine.CreateInteger(value));
+        public void Push(int value) => _stack.Push(value);
 
-        public void Push(uint value) => _stack.Push(_engine.CreateInteger(value));
+        public void Push(uint value) => _stack.Push(value);
 
-        public void Push(long value) => _stack.Push(_engine.CreateInteger(value));
+        public void Push(long value) => _stack.Push(value);
 
-        public void Push(ulong value) => _stack.Push(_engine.CreateInteger(value));
+        public void Push(ulong value) => _stack.Push(value);
 
-        public void Push(byte[] value) => _stack.Push(_engine.CreateByteArray(value));
+        public void Push(byte[] value) => _stack.Push(value);
 
-        public void Push<T>(T item) where T : class => _stack.Push(_engine.CreateInterop(item));
+        public void Push<T>(T item) where T : class => _stack.PushObject(item);
 
         public void Push<T>(T[] items) where T : class
         {
-            var stackItems = items
-                .Select(_engine.CreateInterop)
-                .ToArray();
+            //var stackItems = items
+            //    .Select(_engine.CreateInterop)
+            //    .ToArray();
 
-            _stack.Push(_engine.CreateArray(stackItems));
+            //_stack.Push(_engine.CreateArray(stackItems));
         }
 
         public byte[] PeekByteArray(int index = 0) => _stack.PeekByteArray();

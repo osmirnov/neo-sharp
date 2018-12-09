@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 
@@ -6,6 +7,85 @@ namespace NeoSharp.VM
 {
     public abstract class Stack : StackBase<StackItemBase>
     {
+        #region Creates
+
+        /// <summary>
+        /// Create Map StackItem
+        /// </summary>
+        protected internal abstract MapStackItemBase CreateMap();
+
+        /// <summary>
+        /// Create Array StackItem
+        /// </summary>
+        /// <param name="items">Items</param>
+        protected internal abstract ArrayStackItemBase CreateArray(IEnumerable<StackItemBase> items = null);
+
+        /// <summary>
+        /// Create Struct StackItem
+        /// </summary>
+        /// <param name="items">Items</param>
+        protected internal abstract ArrayStackItemBase CreateStruct(IEnumerable<StackItemBase> items = null);
+
+        /// <summary>
+        /// Create ByteArrayStackItem
+        /// </summary>
+        /// <param name="data">Buffer</param>
+        protected internal abstract ByteArrayStackItemBase CreateByteArray(byte[] data);
+
+        /// <summary>
+        /// Create InteropStackItem
+        /// </summary>
+        /// <param name="obj">Object</param>
+        protected internal abstract InteropStackItemBase<T> CreateInterop<T>(T obj) where T : class;
+
+        /// <summary>
+        /// Create BooleanStackItem
+        /// </summary>
+        /// <param name="value">Value</param>
+        protected internal abstract BooleanStackItemBase CreateBool(bool value);
+
+        /// <summary>
+        /// Create IntegerStackItem
+        /// </summary>
+        /// <param name="value">Value</param>
+        protected internal abstract IntegerStackItemBase CreateInteger(int value);
+
+        /// <summary>
+        /// Create IntegerStackItem
+        /// </summary>
+        /// <param name="value">Value</param>
+        protected internal abstract IntegerStackItemBase CreateInteger(long value);
+
+        /// <summary>
+        /// Create IntegerStackItem
+        /// </summary>
+        /// <param name="value">Value</param>
+        protected internal abstract IntegerStackItemBase CreateInteger(BigInteger value);
+
+        /// <summary>
+        /// Create IntegerStackItem
+        /// </summary>
+        /// <param name="value">Value</param>
+        protected internal abstract IntegerStackItemBase CreateInteger(byte[] value);
+
+        #endregion
+
+        public void Push(bool value) => Push(CreateBool(value));
+
+        public void Push(int value) => Push(CreateInteger(value));
+
+        public void Push(uint value) => Push(CreateInteger(value));
+
+        public void Push(long value) => Push(CreateInteger(value));
+
+        public void Push(ulong value) => Push(CreateInteger(value));
+
+        public void Push(byte[] value) => Push(CreateByteArray(value));
+
+        public void PushObject<T>(T item) where T : class => Push(CreateInterop(item));
+
+        //void Push<T>(T[] items) where T : class;
+
         public byte[] PeekByteArray(int index = 0)
         {
             var stackItem = Peek(index) as ByteArrayStackItemBase;

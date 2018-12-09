@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
 using Neo.VM;
 using NeoSharp.VM.NeoVM.Extensions;
 using NeoSharp.VM.NeoVM.StackItems;
@@ -27,6 +29,60 @@ namespace NeoSharp.VM.NeoVM
 
             return count;
         }
+
+        #region Create items
+
+        protected override ArrayStackItemBase CreateArray(IEnumerable<StackItemBase> items = null)
+        {
+            return new ArrayStackItem(items);
+        }
+
+        protected override ArrayStackItemBase CreateStruct(IEnumerable<StackItemBase> items = null)
+        {
+            return new StructStackItem(items);
+        }
+
+        protected override BooleanStackItemBase CreateBool(bool value)
+        {
+            return new BooleanStackItem(value);
+        }
+
+        protected override ByteArrayStackItemBase CreateByteArray(byte[] data)
+        {
+            return new ByteArrayStackItem(data);
+        }
+
+        protected override IntegerStackItemBase CreateInteger(BigInteger value)
+        {
+            return new IntegerStackItem(value);
+        }
+
+        protected override IntegerStackItemBase CreateInteger(byte[] value)
+        {
+            return new IntegerStackItem(value);
+        }
+
+        protected override IntegerStackItemBase CreateInteger(int value)
+        {
+            return new IntegerStackItem(value);
+        }
+
+        protected override IntegerStackItemBase CreateInteger(long value)
+        {
+            return new IntegerStackItem(value);
+        }
+
+        protected override InteropStackItemBase<T> CreateInterop<T>(T obj)
+        {
+            return new InteropStackItem<T>(obj);
+        }
+
+        protected override MapStackItemBase CreateMap()
+        {
+            return new MapStackItem();
+        }
+
+        #endregion
 
         public override StackItemBase Pop()
         {
