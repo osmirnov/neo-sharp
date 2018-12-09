@@ -45,32 +45,32 @@ namespace NeoSharp.Core.VM
 
             // Standard Library
 
-            interopService.RegisterStackTransition("System.Contract.GetStorageContext", Contract_GetStorageContext);
-            interopService.RegisterStackTransition("System.Contract.Destroy", Contract_Destroy);
-            interopService.RegisterStackTransition("System.Storage.Put", Storage_Put);
-            interopService.RegisterStackTransition("System.Storage.Delete", Storage_Delete);
+            interopService.RegisterStackCall("System.Contract.GetStorageContext", Contract_GetStorageContext);
+            interopService.RegisterStackCall("System.Contract.Destroy", Contract_Destroy);
+            interopService.RegisterStackCall("System.Storage.Put", Storage_Put);
+            interopService.RegisterStackCall("System.Storage.Delete", Storage_Delete);
 
             // Neo Specified
 
-            interopService.RegisterStackTransition("Neo.Asset.Create", Asset_Create);
-            interopService.RegisterStackTransition("Neo.Asset.Renew", Asset_Renew);
-            interopService.RegisterStackTransition("Neo.Contract.Create", Contract_Create);
-            interopService.RegisterStackTransition("Neo.Contract.Migrate", Contract_Migrate);
+            interopService.RegisterStackCall("Neo.Asset.Create", Asset_Create);
+            interopService.RegisterStackCall("Neo.Asset.Renew", Asset_Renew);
+            interopService.RegisterStackCall("Neo.Contract.Create", Contract_Create);
+            interopService.RegisterStackCall("Neo.Contract.Migrate", Contract_Migrate);
 
             #region Old APIs
 
-            interopService.RegisterStackTransition("AntShares.Asset.Create", Asset_Create);
-            interopService.RegisterStackTransition("AntShares.Asset.Renew", Asset_Renew);
-            interopService.RegisterStackTransition("AntShares.Contract.Create", Contract_Create);
-            interopService.RegisterStackTransition("AntShares.Contract.Migrate", Contract_Migrate);
-            interopService.RegisterStackTransition("Neo.Contract.GetStorageContext", Contract_GetStorageContext);
-            interopService.RegisterStackTransition("AntShares.Contract.GetStorageContext", Contract_GetStorageContext);
-            interopService.RegisterStackTransition("Neo.Contract.Destroy", Contract_Destroy);
-            interopService.RegisterStackTransition("AntShares.Contract.Destroy", Contract_Destroy);
-            interopService.RegisterStackTransition("Neo.Storage.Put", Storage_Put);
-            interopService.RegisterStackTransition("AntShares.Storage.Put", Storage_Put);
-            interopService.RegisterStackTransition("Neo.Storage.Delete", Storage_Delete);
-            interopService.RegisterStackTransition("AntShares.Storage.Delete", Storage_Delete);
+            interopService.RegisterStackCall("AntShares.Asset.Create", Asset_Create);
+            interopService.RegisterStackCall("AntShares.Asset.Renew", Asset_Renew);
+            interopService.RegisterStackCall("AntShares.Contract.Create", Contract_Create);
+            interopService.RegisterStackCall("AntShares.Contract.Migrate", Contract_Migrate);
+            interopService.RegisterStackCall("Neo.Contract.GetStorageContext", Contract_GetStorageContext);
+            interopService.RegisterStackCall("AntShares.Contract.GetStorageContext", Contract_GetStorageContext);
+            interopService.RegisterStackCall("Neo.Contract.Destroy", Contract_Destroy);
+            interopService.RegisterStackCall("AntShares.Contract.Destroy", Contract_Destroy);
+            interopService.RegisterStackCall("Neo.Storage.Put", Storage_Put);
+            interopService.RegisterStackCall("AntShares.Storage.Put", Storage_Put);
+            interopService.RegisterStackCall("Neo.Storage.Delete", Storage_Delete);
+            interopService.RegisterStackCall("AntShares.Storage.Delete", Storage_Delete);
 
             #endregion
         }
@@ -83,13 +83,13 @@ namespace NeoSharp.Core.VM
             _storages.Commit();
         }
 
-        protected override bool Runtime_GetTime(IStackAccessor stack)
+        protected override bool Runtime_GetTime(Stack stack)
         {
             stack.Push(_persistingBlock.Timestamp);
             return true;
         }
 
-        private bool Asset_Create(IStackAccessor stack)
+        private bool Asset_Create(Stack stack)
         {
             //InvocationTransaction tx = (InvocationTransaction)engine.ScriptContainer;
             //AssetType assetType = (AssetType)(byte)engine.CurrentContext.EvaluationStack.Pop().GetBigInteger();
@@ -133,7 +133,7 @@ namespace NeoSharp.Core.VM
             return true;
         }
 
-        private bool Asset_Renew(IStackAccessor stack)
+        private bool Asset_Renew(Stack stack)
         {
             var asset = stack.PopObject<Asset>();
             if (asset == null) return false;
@@ -159,7 +159,7 @@ namespace NeoSharp.Core.VM
             return true;
         }
 
-        private bool Contract_Create(IStackAccessor stack)
+        private bool Contract_Create(Stack stack)
         {
             var script = stack.PopByteArray();
             if (script.Length > 1024 * 1024) return false;
@@ -211,12 +211,12 @@ namespace NeoSharp.Core.VM
                 //_contractsCreated.Add(scriptHash, new UInt160(engine.CurrentContext.ScriptHash));
             }
 
-            stack.Push(contract);
+            stack.PushObject(contract);
 
             return true;
         }
 
-        private bool Contract_Migrate(IStackAccessor stack)
+        private bool Contract_Migrate(Stack stack)
         {
             var script = stack.PopByteArray();
             if (script.Length > 1024 * 1024) return false;
@@ -282,12 +282,12 @@ namespace NeoSharp.Core.VM
                 //}
             }
 
-            stack.Push(contract);
+            stack.PushObject(contract);
 
             return Contract_Destroy(stack);
         }
 
-        private bool Contract_GetStorageContext(IStackAccessor stack)
+        private bool Contract_GetStorageContext(Stack stack)
         {
             var contract = stack.PopObject<Contract>();
 
@@ -295,7 +295,7 @@ namespace NeoSharp.Core.VM
             // TODO: get script hash from engine
             // if (!created.Equals(new UInt160(engine.CurrentContext.ScriptHash))) return false;
 
-            stack.Push(new StorageContext
+            stack.PushObject(new StorageContext
             {
                 ScriptHash = contract.ScriptHash,
                 IsReadOnly = false
@@ -304,7 +304,7 @@ namespace NeoSharp.Core.VM
             return true;
         }
 
-        private bool Contract_Destroy(IStackAccessor engine)
+        private bool Contract_Destroy(Stack engine)
         {
             // TODO: get script hash from engine
             //var hash = new UInt160(engine.CurrentContext.ScriptHash);
@@ -317,7 +317,7 @@ namespace NeoSharp.Core.VM
             return true;
         }
 
-        private bool Storage_Put(IStackAccessor stack)
+        private bool Storage_Put(Stack stack)
         {
             var context = stack.PopObject<StorageContext>();
             if (context == null) return false;
@@ -338,7 +338,7 @@ namespace NeoSharp.Core.VM
             return true;
         }
 
-        private bool Storage_Delete(IStackAccessor stack)
+        private bool Storage_Delete(Stack stack)
         {
             var context = stack.PopObject<StorageContext>();
             if (context == null) return false;

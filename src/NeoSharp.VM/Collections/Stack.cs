@@ -84,7 +84,14 @@ namespace NeoSharp.VM
 
         public void PushObject<T>(T item) where T : class => Push(CreateInterop(item));
 
-        //void Push<T>(T[] items) where T : class;
+        public void Push<T>(T[] items) where T : class
+        {
+            var stackItems = items
+                .Select(CreateInterop)
+                .ToArray();
+
+            Push(CreateArray(stackItems));
+        }
 
         public byte[] PeekByteArray(int index = 0)
         {
