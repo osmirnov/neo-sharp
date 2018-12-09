@@ -62,153 +62,153 @@ namespace NeoSharp.Core.VM
             _interopService = interopService;
 
             //Standard Library
-            interopService.RegisterStackCall("System.Runtime.GetTrigger", Runtime_GetTrigger);
-            interopService.RegisterStackCall("System.Runtime.CheckWitness", Runtime_CheckWitness);
+            interopService.RegisterStackMethod("System.Runtime.GetTrigger", Runtime_GetTrigger);
+            interopService.Register("System.Runtime.CheckWitness", Runtime_CheckWitness);
             interopService.Register("System.Runtime.Notify", Runtime_Notify);
             interopService.Register("System.Runtime.Log", Runtime_Log);
-            interopService.RegisterStackCall("System.Runtime.GetTime", Runtime_GetTime);
-            interopService.RegisterStackCall("System.Blockchain.GetHeight", Blockchain_GetHeight);
-            interopService.RegisterStackCall("System.Blockchain.GetHeader", Blockchain_GetHeader);
-            interopService.RegisterStackCall("System.Blockchain.GetBlock", Blockchain_GetBlock);
-            interopService.RegisterStackCall("System.Blockchain.GetTransaction", Blockchain_GetTransaction);
-            interopService.RegisterStackCall("System.Blockchain.GetTransactionHeight", Blockchain_GetTransactionHeight);
-            interopService.RegisterStackCall("System.Blockchain.GetContract", Blockchain_GetContract);
-            interopService.RegisterStackCall("System.Header.GetIndex", Header_GetIndex);
-            interopService.RegisterStackCall("System.Header.GetHash", Header_GetHash);
-            interopService.RegisterStackCall("System.Header.GetPrevHash", Header_GetPrevHash);
-            interopService.RegisterStackCall("System.Header.GetTimestamp", Header_GetTimestamp);
-            interopService.RegisterStackCall("System.Block.GetTransactionCount", Block_GetTransactionCount);
-            interopService.RegisterStackCall("System.Block.GetTransactions", Block_GetTransactions);
-            interopService.RegisterStackCall("System.Block.GetTransaction", Block_GetTransaction);
-            interopService.RegisterStackCall("System.Transaction.GetHash", Transaction_GetHash);
+            interopService.RegisterStackMethod("System.Runtime.GetTime", Runtime_GetTime);
+            interopService.RegisterStackMethod("System.Blockchain.GetHeight", Blockchain_GetHeight);
+            interopService.RegisterStackMethod("System.Blockchain.GetHeader", Blockchain_GetHeader);
+            interopService.RegisterStackMethod("System.Blockchain.GetBlock", Blockchain_GetBlock);
+            interopService.RegisterStackMethod("System.Blockchain.GetTransaction", Blockchain_GetTransaction);
+            interopService.RegisterStackMethod("System.Blockchain.GetTransactionHeight", Blockchain_GetTransactionHeight);
+            interopService.RegisterStackMethod("System.Blockchain.GetContract", Blockchain_GetContract);
+            interopService.RegisterStackMethod("System.Header.GetIndex", Header_GetIndex);
+            interopService.RegisterStackMethod("System.Header.GetHash", Header_GetHash);
+            interopService.RegisterStackMethod("System.Header.GetPrevHash", Header_GetPrevHash);
+            interopService.RegisterStackMethod("System.Header.GetTimestamp", Header_GetTimestamp);
+            interopService.RegisterStackMethod("System.Block.GetTransactionCount", Block_GetTransactionCount);
+            interopService.RegisterStackMethod("System.Block.GetTransactions", Block_GetTransactions);
+            interopService.RegisterStackMethod("System.Block.GetTransaction", Block_GetTransaction);
+            interopService.RegisterStackMethod("System.Transaction.GetHash", Transaction_GetHash);
             interopService.Register("System.Storage.GetContext", Storage_GetContext);
             interopService.Register("System.Storage.GetReadOnlyContext", Storage_GetReadOnlyContext);
-            interopService.RegisterStackCall("System.Storage.Get", Storage_Get);
-            interopService.RegisterStackCall("System.StorageContext.AsReadOnly", StorageContext_AsReadOnly);
+            interopService.RegisterStackMethod("System.Storage.Get", Storage_Get);
+            interopService.RegisterStackMethod("System.StorageContext.AsReadOnly", StorageContext_AsReadOnly);
 
             //Neo Specified
-            interopService.RegisterStackCall("Neo.Blockchain.GetAccount", Blockchain_GetAccount);
-            interopService.RegisterStackCall("Neo.Blockchain.GetValidators", Blockchain_GetValidators);
-            interopService.RegisterStackCall("Neo.Blockchain.GetAsset", Blockchain_GetAsset);
-            interopService.RegisterStackCall("Neo.Header.GetVersion", Header_GetVersion);
-            interopService.RegisterStackCall("Neo.Header.GetMerkleRoot", Header_GetMerkleRoot);
-            interopService.RegisterStackCall("Neo.Header.GetConsensusData", Header_GetConsensusData);
-            interopService.RegisterStackCall("Neo.Header.GetNextConsensus", Header_GetNextConsensus);
-            interopService.RegisterStackCall("Neo.Transaction.GetType", Transaction_GetType);
-            interopService.RegisterStackCall("Neo.Transaction.GetAttributes", Transaction_GetAttributes);
-            interopService.RegisterStackCall("Neo.Transaction.GetInputs", Transaction_GetInputs);
-            interopService.RegisterStackCall("Neo.Transaction.GetOutputs", Transaction_GetOutputs);
-            interopService.RegisterStackCall("Neo.Transaction.GetReferences", Transaction_GetReferences);
-            interopService.RegisterStackCall("Neo.Transaction.GetUnspentCoins", Transaction_GetUnspentCoins);
-            interopService.RegisterStackCall("Neo.InvocationTransaction.GetScript", InvocationTransaction_GetScript);
-            interopService.RegisterStackCall("Neo.Attribute.GetUsage", Attribute_GetUsage);
-            interopService.RegisterStackCall("Neo.Attribute.GetData", Attribute_GetData);
-            interopService.RegisterStackCall("Neo.Input.GetHash", Input_GetHash);
-            interopService.RegisterStackCall("Neo.Input.GetIndex", Input_GetIndex);
-            interopService.RegisterStackCall("Neo.Output.GetAssetId", Output_GetAssetId);
-            interopService.RegisterStackCall("Neo.Output.GetValue", Output_GetValue);
-            interopService.RegisterStackCall("Neo.Output.GetScriptHash", Output_GetScriptHash);
-            interopService.RegisterStackCall("Neo.Account.GetScriptHash", Account_GetScriptHash);
-            interopService.RegisterStackCall("Neo.Account.GetVotes", Account_GetVotes);
-            interopService.RegisterStackCall("Neo.Account.GetBalance", Account_GetBalance);
-            interopService.RegisterStackCall("Neo.Asset.GetAssetId", Asset_GetAssetId);
-            interopService.RegisterStackCall("Neo.Asset.GetAssetType", Asset_GetAssetType);
-            interopService.RegisterStackCall("Neo.Asset.GetAmount", Asset_GetAmount);
-            interopService.RegisterStackCall("Neo.Asset.GetAvailable", Asset_GetAvailable);
-            interopService.RegisterStackCall("Neo.Asset.GetPrecision", Asset_GetPrecision);
-            interopService.RegisterStackCall("Neo.Asset.GetOwner", Asset_GetOwner);
-            interopService.RegisterStackCall("Neo.Asset.GetAdmin", Asset_GetAdmin);
-            interopService.RegisterStackCall("Neo.Asset.GetIssuer", Asset_GetIssuer);
-            interopService.RegisterStackCall("Neo.Contract.GetScript", Contract_GetScript);
-            interopService.RegisterStackCall("Neo.Contract.IsPayable", Contract_IsPayable);
-            interopService.RegisterStackCall("Neo.Storage.Find", Storage_Find);
+            interopService.RegisterStackMethod("Neo.Blockchain.GetAccount", Blockchain_GetAccount);
+            interopService.RegisterStackMethod("Neo.Blockchain.GetValidators", Blockchain_GetValidators);
+            interopService.RegisterStackMethod("Neo.Blockchain.GetAsset", Blockchain_GetAsset);
+            interopService.RegisterStackMethod("Neo.Header.GetVersion", Header_GetVersion);
+            interopService.RegisterStackMethod("Neo.Header.GetMerkleRoot", Header_GetMerkleRoot);
+            interopService.RegisterStackMethod("Neo.Header.GetConsensusData", Header_GetConsensusData);
+            interopService.RegisterStackMethod("Neo.Header.GetNextConsensus", Header_GetNextConsensus);
+            interopService.RegisterStackMethod("Neo.Transaction.GetType", Transaction_GetType);
+            interopService.RegisterStackMethod("Neo.Transaction.GetAttributes", Transaction_GetAttributes);
+            interopService.RegisterStackMethod("Neo.Transaction.GetInputs", Transaction_GetInputs);
+            interopService.RegisterStackMethod("Neo.Transaction.GetOutputs", Transaction_GetOutputs);
+            interopService.RegisterStackMethod("Neo.Transaction.GetReferences", Transaction_GetReferences);
+            interopService.RegisterStackMethod("Neo.Transaction.GetUnspentCoins", Transaction_GetUnspentCoins);
+            interopService.RegisterStackMethod("Neo.InvocationTransaction.GetScript", InvocationTransaction_GetScript);
+            interopService.RegisterStackMethod("Neo.Attribute.GetUsage", Attribute_GetUsage);
+            interopService.RegisterStackMethod("Neo.Attribute.GetData", Attribute_GetData);
+            interopService.RegisterStackMethod("Neo.Input.GetHash", Input_GetHash);
+            interopService.RegisterStackMethod("Neo.Input.GetIndex", Input_GetIndex);
+            interopService.RegisterStackMethod("Neo.Output.GetAssetId", Output_GetAssetId);
+            interopService.RegisterStackMethod("Neo.Output.GetValue", Output_GetValue);
+            interopService.RegisterStackMethod("Neo.Output.GetScriptHash", Output_GetScriptHash);
+            interopService.RegisterStackMethod("Neo.Account.GetScriptHash", Account_GetScriptHash);
+            interopService.RegisterStackMethod("Neo.Account.GetVotes", Account_GetVotes);
+            interopService.RegisterStackMethod("Neo.Account.GetBalance", Account_GetBalance);
+            interopService.RegisterStackMethod("Neo.Asset.GetAssetId", Asset_GetAssetId);
+            interopService.RegisterStackMethod("Neo.Asset.GetAssetType", Asset_GetAssetType);
+            interopService.RegisterStackMethod("Neo.Asset.GetAmount", Asset_GetAmount);
+            interopService.RegisterStackMethod("Neo.Asset.GetAvailable", Asset_GetAvailable);
+            interopService.RegisterStackMethod("Neo.Asset.GetPrecision", Asset_GetPrecision);
+            interopService.RegisterStackMethod("Neo.Asset.GetOwner", Asset_GetOwner);
+            interopService.RegisterStackMethod("Neo.Asset.GetAdmin", Asset_GetAdmin);
+            interopService.RegisterStackMethod("Neo.Asset.GetIssuer", Asset_GetIssuer);
+            interopService.RegisterStackMethod("Neo.Contract.GetScript", Contract_GetScript);
+            interopService.RegisterStackMethod("Neo.Contract.IsPayable", Contract_IsPayable);
+            interopService.RegisterStackMethod("Neo.Storage.Find", Storage_Find);
             // TODO: APIs for enumeration and iteration
-            //interopService.RegisterStackCall("Neo.Enumerator.Create", Enumerator_Create);
-            //interopService.RegisterStackCall("Neo.Enumerator.Next", Enumerator_Next);
-            //interopService.RegisterStackCall("Neo.Enumerator.Value", Enumerator_Value);
-            //interopService.RegisterStackCall("Neo.Enumerator.Concat", Enumerator_Concat);
-            //interopService.RegisterStackCall("Neo.Iterator.Create", Iterator_Create);
-            //interopService.RegisterStackCall("Neo.Iterator.Key", Iterator_Key);
-            //interopService.RegisterStackCall("Neo.Iterator.Keys", Iterator_Keys);
-            //interopService.RegisterStackCall("Neo.Iterator.Values", Iterator_Values);
+            //interopService.RegisterStackMethod("Neo.Enumerator.Create", Enumerator_Create);
+            //interopService.RegisterStackMethod("Neo.Enumerator.Next", Enumerator_Next);
+            //interopService.RegisterStackMethod("Neo.Enumerator.Value", Enumerator_Value);
+            //interopService.RegisterStackMethod("Neo.Enumerator.Concat", Enumerator_Concat);
+            //interopService.RegisterStackMethod("Neo.Iterator.Create", Iterator_Create);
+            //interopService.RegisterStackMethod("Neo.Iterator.Key", Iterator_Key);
+            //interopService.RegisterStackMethod("Neo.Iterator.Keys", Iterator_Keys);
+            //interopService.RegisterStackMethod("Neo.Iterator.Values", Iterator_Values);
 
             #region Aliases
-            //interopService.RegisterStackCall("Neo.Iterator.Next", Enumerator_Next);
-            //interopService.RegisterStackCall("Neo.Iterator.Value", Enumerator_Value);
+            //interopService.RegisterStackMethod("Neo.Iterator.Next", Enumerator_Next);
+            //interopService.RegisterStackMethod("Neo.Iterator.Value", Enumerator_Value);
             #endregion
 
             #region Old APIs
-            interopService.RegisterStackCall("Neo.Runtime.GetTrigger", Runtime_GetTrigger);
-            interopService.RegisterStackCall("Neo.Runtime.CheckWitness", Runtime_CheckWitness);
-            interopService.RegisterStackCall("AntShares.Runtime.CheckWitness", Runtime_CheckWitness);
+            interopService.RegisterStackMethod("Neo.Runtime.GetTrigger", Runtime_GetTrigger);
+            interopService.Register("Neo.Runtime.CheckWitness", Runtime_CheckWitness);
+            interopService.Register("AntShares.Runtime.CheckWitness", Runtime_CheckWitness);
             interopService.Register("Neo.Runtime.Notify", Runtime_Notify);
             interopService.Register("AntShares.Runtime.Notify", Runtime_Notify);
             interopService.Register("Neo.Runtime.Log", Runtime_Log);
             interopService.Register("AntShares.Runtime.Log", Runtime_Log);
-            interopService.RegisterStackCall("Neo.Runtime.GetTime", Runtime_GetTime);
-            interopService.RegisterStackCall("Neo.Blockchain.GetHeight", Blockchain_GetHeight);
-            interopService.RegisterStackCall("AntShares.Blockchain.GetHeight", Blockchain_GetHeight);
-            interopService.RegisterStackCall("Neo.Blockchain.GetHeader", Blockchain_GetHeader);
-            interopService.RegisterStackCall("AntShares.Blockchain.GetHeader", Blockchain_GetHeader);
-            interopService.RegisterStackCall("Neo.Blockchain.GetBlock", Blockchain_GetBlock);
-            interopService.RegisterStackCall("AntShares.Blockchain.GetBlock", Blockchain_GetBlock);
-            interopService.RegisterStackCall("Neo.Blockchain.GetTransaction", Blockchain_GetTransaction);
-            interopService.RegisterStackCall("AntShares.Blockchain.GetTransaction", Blockchain_GetTransaction);
-            interopService.RegisterStackCall("Neo.Blockchain.GetTransactionHeight", Blockchain_GetTransactionHeight);
-            interopService.RegisterStackCall("AntShares.Blockchain.GetAccount", Blockchain_GetAccount);
-            interopService.RegisterStackCall("AntShares.Blockchain.GetValidators", Blockchain_GetValidators);
-            interopService.RegisterStackCall("AntShares.Blockchain.GetAsset", Blockchain_GetAsset);
-            interopService.RegisterStackCall("Neo.Blockchain.GetContract", Blockchain_GetContract);
-            interopService.RegisterStackCall("AntShares.Blockchain.GetContract", Blockchain_GetContract);
-            interopService.RegisterStackCall("Neo.Header.GetIndex", Header_GetIndex);
-            interopService.RegisterStackCall("Neo.Header.GetHash", Header_GetHash);
-            interopService.RegisterStackCall("AntShares.Header.GetHash", Header_GetHash);
-            interopService.RegisterStackCall("AntShares.Header.GetVersion", Header_GetVersion);
-            interopService.RegisterStackCall("Neo.Header.GetPrevHash", Header_GetPrevHash);
-            interopService.RegisterStackCall("AntShares.Header.GetPrevHash", Header_GetPrevHash);
-            interopService.RegisterStackCall("AntShares.Header.GetMerkleRoot", Header_GetMerkleRoot);
-            interopService.RegisterStackCall("Neo.Header.GetTimestamp", Header_GetTimestamp);
-            interopService.RegisterStackCall("AntShares.Header.GetTimestamp", Header_GetTimestamp);
-            interopService.RegisterStackCall("AntShares.Header.GetConsensusData", Header_GetConsensusData);
-            interopService.RegisterStackCall("AntShares.Header.GetNextConsensus", Header_GetNextConsensus);
-            interopService.RegisterStackCall("Neo.Block.GetTransactionCount", Block_GetTransactionCount);
-            interopService.RegisterStackCall("AntShares.Block.GetTransactionCount", Block_GetTransactionCount);
-            interopService.RegisterStackCall("Neo.Block.GetTransactions", Block_GetTransactions);
-            interopService.RegisterStackCall("AntShares.Block.GetTransactions", Block_GetTransactions);
-            interopService.RegisterStackCall("Neo.Block.GetTransaction", Block_GetTransaction);
-            interopService.RegisterStackCall("AntShares.Block.GetTransaction", Block_GetTransaction);
-            interopService.RegisterStackCall("Neo.Transaction.GetHash", Transaction_GetHash);
-            interopService.RegisterStackCall("AntShares.Transaction.GetHash", Transaction_GetHash);
-            interopService.RegisterStackCall("AntShares.Transaction.GetType", Transaction_GetType);
-            interopService.RegisterStackCall("AntShares.Transaction.GetAttributes", Transaction_GetAttributes);
-            interopService.RegisterStackCall("AntShares.Transaction.GetInputs", Transaction_GetInputs);
-            interopService.RegisterStackCall("AntShares.Transaction.GetOutputs", Transaction_GetOutputs);
-            interopService.RegisterStackCall("AntShares.Transaction.GetReferences", Transaction_GetReferences);
-            interopService.RegisterStackCall("AntShares.Attribute.GetUsage", Attribute_GetUsage);
-            interopService.RegisterStackCall("AntShares.Attribute.GetData", Attribute_GetData);
-            interopService.RegisterStackCall("AntShares.Input.GetHash", Input_GetHash);
-            interopService.RegisterStackCall("AntShares.Input.GetIndex", Input_GetIndex);
-            interopService.RegisterStackCall("AntShares.Output.GetAssetId", Output_GetAssetId);
-            interopService.RegisterStackCall("AntShares.Output.GetValue", Output_GetValue);
-            interopService.RegisterStackCall("AntShares.Output.GetScriptHash", Output_GetScriptHash);
-            interopService.RegisterStackCall("AntShares.Account.GetScriptHash", Account_GetScriptHash);
-            interopService.RegisterStackCall("AntShares.Account.GetVotes", Account_GetVotes);
-            interopService.RegisterStackCall("AntShares.Account.GetBalance", Account_GetBalance);
-            interopService.RegisterStackCall("AntShares.Asset.GetAssetId", Asset_GetAssetId);
-            interopService.RegisterStackCall("AntShares.Asset.GetAssetType", Asset_GetAssetType);
-            interopService.RegisterStackCall("AntShares.Asset.GetAmount", Asset_GetAmount);
-            interopService.RegisterStackCall("AntShares.Asset.GetAvailable", Asset_GetAvailable);
-            interopService.RegisterStackCall("AntShares.Asset.GetPrecision", Asset_GetPrecision);
-            interopService.RegisterStackCall("AntShares.Asset.GetOwner", Asset_GetOwner);
-            interopService.RegisterStackCall("AntShares.Asset.GetAdmin", Asset_GetAdmin);
-            interopService.RegisterStackCall("AntShares.Asset.GetIssuer", Asset_GetIssuer);
-            interopService.RegisterStackCall("AntShares.Contract.GetScript", Contract_GetScript);
+            interopService.RegisterStackMethod("Neo.Runtime.GetTime", Runtime_GetTime);
+            interopService.RegisterStackMethod("Neo.Blockchain.GetHeight", Blockchain_GetHeight);
+            interopService.RegisterStackMethod("AntShares.Blockchain.GetHeight", Blockchain_GetHeight);
+            interopService.RegisterStackMethod("Neo.Blockchain.GetHeader", Blockchain_GetHeader);
+            interopService.RegisterStackMethod("AntShares.Blockchain.GetHeader", Blockchain_GetHeader);
+            interopService.RegisterStackMethod("Neo.Blockchain.GetBlock", Blockchain_GetBlock);
+            interopService.RegisterStackMethod("AntShares.Blockchain.GetBlock", Blockchain_GetBlock);
+            interopService.RegisterStackMethod("Neo.Blockchain.GetTransaction", Blockchain_GetTransaction);
+            interopService.RegisterStackMethod("AntShares.Blockchain.GetTransaction", Blockchain_GetTransaction);
+            interopService.RegisterStackMethod("Neo.Blockchain.GetTransactionHeight", Blockchain_GetTransactionHeight);
+            interopService.RegisterStackMethod("AntShares.Blockchain.GetAccount", Blockchain_GetAccount);
+            interopService.RegisterStackMethod("AntShares.Blockchain.GetValidators", Blockchain_GetValidators);
+            interopService.RegisterStackMethod("AntShares.Blockchain.GetAsset", Blockchain_GetAsset);
+            interopService.RegisterStackMethod("Neo.Blockchain.GetContract", Blockchain_GetContract);
+            interopService.RegisterStackMethod("AntShares.Blockchain.GetContract", Blockchain_GetContract);
+            interopService.RegisterStackMethod("Neo.Header.GetIndex", Header_GetIndex);
+            interopService.RegisterStackMethod("Neo.Header.GetHash", Header_GetHash);
+            interopService.RegisterStackMethod("AntShares.Header.GetHash", Header_GetHash);
+            interopService.RegisterStackMethod("AntShares.Header.GetVersion", Header_GetVersion);
+            interopService.RegisterStackMethod("Neo.Header.GetPrevHash", Header_GetPrevHash);
+            interopService.RegisterStackMethod("AntShares.Header.GetPrevHash", Header_GetPrevHash);
+            interopService.RegisterStackMethod("AntShares.Header.GetMerkleRoot", Header_GetMerkleRoot);
+            interopService.RegisterStackMethod("Neo.Header.GetTimestamp", Header_GetTimestamp);
+            interopService.RegisterStackMethod("AntShares.Header.GetTimestamp", Header_GetTimestamp);
+            interopService.RegisterStackMethod("AntShares.Header.GetConsensusData", Header_GetConsensusData);
+            interopService.RegisterStackMethod("AntShares.Header.GetNextConsensus", Header_GetNextConsensus);
+            interopService.RegisterStackMethod("Neo.Block.GetTransactionCount", Block_GetTransactionCount);
+            interopService.RegisterStackMethod("AntShares.Block.GetTransactionCount", Block_GetTransactionCount);
+            interopService.RegisterStackMethod("Neo.Block.GetTransactions", Block_GetTransactions);
+            interopService.RegisterStackMethod("AntShares.Block.GetTransactions", Block_GetTransactions);
+            interopService.RegisterStackMethod("Neo.Block.GetTransaction", Block_GetTransaction);
+            interopService.RegisterStackMethod("AntShares.Block.GetTransaction", Block_GetTransaction);
+            interopService.RegisterStackMethod("Neo.Transaction.GetHash", Transaction_GetHash);
+            interopService.RegisterStackMethod("AntShares.Transaction.GetHash", Transaction_GetHash);
+            interopService.RegisterStackMethod("AntShares.Transaction.GetType", Transaction_GetType);
+            interopService.RegisterStackMethod("AntShares.Transaction.GetAttributes", Transaction_GetAttributes);
+            interopService.RegisterStackMethod("AntShares.Transaction.GetInputs", Transaction_GetInputs);
+            interopService.RegisterStackMethod("AntShares.Transaction.GetOutputs", Transaction_GetOutputs);
+            interopService.RegisterStackMethod("AntShares.Transaction.GetReferences", Transaction_GetReferences);
+            interopService.RegisterStackMethod("AntShares.Attribute.GetUsage", Attribute_GetUsage);
+            interopService.RegisterStackMethod("AntShares.Attribute.GetData", Attribute_GetData);
+            interopService.RegisterStackMethod("AntShares.Input.GetHash", Input_GetHash);
+            interopService.RegisterStackMethod("AntShares.Input.GetIndex", Input_GetIndex);
+            interopService.RegisterStackMethod("AntShares.Output.GetAssetId", Output_GetAssetId);
+            interopService.RegisterStackMethod("AntShares.Output.GetValue", Output_GetValue);
+            interopService.RegisterStackMethod("AntShares.Output.GetScriptHash", Output_GetScriptHash);
+            interopService.RegisterStackMethod("AntShares.Account.GetScriptHash", Account_GetScriptHash);
+            interopService.RegisterStackMethod("AntShares.Account.GetVotes", Account_GetVotes);
+            interopService.RegisterStackMethod("AntShares.Account.GetBalance", Account_GetBalance);
+            interopService.RegisterStackMethod("AntShares.Asset.GetAssetId", Asset_GetAssetId);
+            interopService.RegisterStackMethod("AntShares.Asset.GetAssetType", Asset_GetAssetType);
+            interopService.RegisterStackMethod("AntShares.Asset.GetAmount", Asset_GetAmount);
+            interopService.RegisterStackMethod("AntShares.Asset.GetAvailable", Asset_GetAvailable);
+            interopService.RegisterStackMethod("AntShares.Asset.GetPrecision", Asset_GetPrecision);
+            interopService.RegisterStackMethod("AntShares.Asset.GetOwner", Asset_GetOwner);
+            interopService.RegisterStackMethod("AntShares.Asset.GetAdmin", Asset_GetAdmin);
+            interopService.RegisterStackMethod("AntShares.Asset.GetIssuer", Asset_GetIssuer);
+            interopService.RegisterStackMethod("AntShares.Contract.GetScript", Contract_GetScript);
             interopService.Register("Neo.Storage.GetContext", Storage_GetContext);
             interopService.Register("AntShares.Storage.GetContext", Storage_GetContext);
             interopService.Register("Neo.Storage.GetReadOnlyContext", Storage_GetReadOnlyContext);
-            interopService.RegisterStackCall("Neo.Storage.Get", Storage_Get);
-            interopService.RegisterStackCall("AntShares.Storage.Get", Storage_Get);
-            interopService.RegisterStackCall("Neo.StorageContext.AsReadOnly", StorageContext_AsReadOnly);
+            interopService.RegisterStackMethod("Neo.Storage.Get", Storage_Get);
+            interopService.RegisterStackMethod("AntShares.Storage.Get", Storage_Get);
+            interopService.RegisterStackMethod("Neo.StorageContext.AsReadOnly", StorageContext_AsReadOnly);
             #endregion
         }
 
@@ -234,7 +234,7 @@ namespace NeoSharp.Core.VM
 
         protected bool CheckWitness(ExecutionEngineBase engine, UInt160 hash)
         {
-            // TODO:
+            // TODO: IVerifiable?
             //IVerifiable container = (IVerifiable)engine.MessageProvider;
             //UInt160[] _hashes_for_verifying = container.GetScriptHashesForVerifying();
             //return _hashes_for_verifying.Contains(hash);
@@ -243,23 +243,28 @@ namespace NeoSharp.Core.VM
 
         protected bool CheckWitness(ExecutionEngineBase engine, ECPoint pubkey)
         {
-            // TODO:
+            // TODO: Contract.CreateSignatureRedeemScript?
             //return CheckWitness(engine, Contract.CreateSignatureRedeemScript(pubkey).ToScriptHash());
             return true;
         }
 
-        protected virtual bool Runtime_CheckWitness(Stack stack)
+        protected virtual bool Runtime_CheckWitness(ExecutionEngineBase engine)
         {
-            var hashOrPubkey = stack.PopByteArray();
-            // TODO:
-            //bool result;
-            //if (hashOrPubkey.Length == 20)
-            //    result = CheckWitness(engine, new UInt160(hashOrPubkey));
-            //else if (hashOrPubkey.Length == 33)
-            //    result = CheckWitness(engine, new ECPoint(hashOrPubkey));
-            //else
-            //    return false;
-            //stack.Push(result);
+            var ctx = engine.CurrentContext;
+            if (ctx == null) return false;
+
+            bool result;
+            var hashOrPubkey = ctx.EvaluationStack.PopByteArray();
+
+            if (hashOrPubkey.Length == 20)
+                result = CheckWitness(engine, new UInt160(hashOrPubkey));
+            else if (hashOrPubkey.Length == 33)
+                result = CheckWitness(engine, new ECPoint(hashOrPubkey));
+            else
+                return false;
+
+            ctx.EvaluationStack.Push(result);
+
             return true;
         }
 

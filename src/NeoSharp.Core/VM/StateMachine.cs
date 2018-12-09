@@ -45,32 +45,32 @@ namespace NeoSharp.Core.VM
 
             // Standard Library
 
-            interopService.RegisterStackCall("System.Contract.GetStorageContext", Contract_GetStorageContext);
-            interopService.RegisterStackCall("System.Contract.Destroy", Contract_Destroy);
-            interopService.RegisterStackCall("System.Storage.Put", Storage_Put);
-            interopService.RegisterStackCall("System.Storage.Delete", Storage_Delete);
+            interopService.Register("System.Contract.GetStorageContext", Contract_GetStorageContext);
+            interopService.Register("System.Contract.Destroy", Contract_Destroy);
+            interopService.RegisterStackMethod("System.Storage.Put", Storage_Put);
+            interopService.RegisterStackMethod("System.Storage.Delete", Storage_Delete);
 
             // Neo Specified
 
-            interopService.RegisterStackCall("Neo.Asset.Create", Asset_Create);
-            interopService.RegisterStackCall("Neo.Asset.Renew", Asset_Renew);
-            interopService.RegisterStackCall("Neo.Contract.Create", Contract_Create);
-            interopService.RegisterStackCall("Neo.Contract.Migrate", Contract_Migrate);
+            interopService.Register("Neo.Asset.Create", Asset_Create);
+            interopService.RegisterStackMethod("Neo.Asset.Renew", Asset_Renew);
+            interopService.Register("Neo.Contract.Create", Contract_Create);
+            interopService.Register("Neo.Contract.Migrate", Contract_Migrate);
 
             #region Old APIs
 
-            interopService.RegisterStackCall("AntShares.Asset.Create", Asset_Create);
-            interopService.RegisterStackCall("AntShares.Asset.Renew", Asset_Renew);
-            interopService.RegisterStackCall("AntShares.Contract.Create", Contract_Create);
-            interopService.RegisterStackCall("AntShares.Contract.Migrate", Contract_Migrate);
-            interopService.RegisterStackCall("Neo.Contract.GetStorageContext", Contract_GetStorageContext);
-            interopService.RegisterStackCall("AntShares.Contract.GetStorageContext", Contract_GetStorageContext);
-            interopService.RegisterStackCall("Neo.Contract.Destroy", Contract_Destroy);
-            interopService.RegisterStackCall("AntShares.Contract.Destroy", Contract_Destroy);
-            interopService.RegisterStackCall("Neo.Storage.Put", Storage_Put);
-            interopService.RegisterStackCall("AntShares.Storage.Put", Storage_Put);
-            interopService.RegisterStackCall("Neo.Storage.Delete", Storage_Delete);
-            interopService.RegisterStackCall("AntShares.Storage.Delete", Storage_Delete);
+            interopService.Register("AntShares.Asset.Create", Asset_Create);
+            interopService.RegisterStackMethod("AntShares.Asset.Renew", Asset_Renew);
+            interopService.Register("AntShares.Contract.Create", Contract_Create);
+            interopService.Register("AntShares.Contract.Migrate", Contract_Migrate);
+            interopService.Register("Neo.Contract.GetStorageContext", Contract_GetStorageContext);
+            interopService.Register("AntShares.Contract.GetStorageContext", Contract_GetStorageContext);
+            interopService.Register("Neo.Contract.Destroy", Contract_Destroy);
+            interopService.Register("AntShares.Contract.Destroy", Contract_Destroy);
+            interopService.RegisterStackMethod("Neo.Storage.Put", Storage_Put);
+            interopService.RegisterStackMethod("AntShares.Storage.Put", Storage_Put);
+            interopService.RegisterStackMethod("Neo.Storage.Delete", Storage_Delete);
+            interopService.RegisterStackMethod("AntShares.Storage.Delete", Storage_Delete);
 
             #endregion
         }
@@ -89,20 +89,25 @@ namespace NeoSharp.Core.VM
             return true;
         }
 
-        private bool Asset_Create(Stack stack)
+        private bool Asset_Create(ExecutionEngineBase engine)
         {
-            //InvocationTransaction tx = (InvocationTransaction)engine.ScriptContainer;
-            //AssetType assetType = (AssetType)(byte)engine.CurrentContext.EvaluationStack.Pop().GetBigInteger();
+            var ctx = engine.CurrentContext;
+            if (ctx == null) return false;
+
+            var stack = ctx.EvaluationStack;
+
+            //var tx = (InvocationTransaction)engine.MessageProvider;
+            //var assetType = (AssetType)(byte)stack.PopBigInteger();
             //if (!Enum.IsDefined(typeof(AssetType), assetType) || assetType == AssetType.CreditFlag || assetType == AssetType.DutyFlag || assetType == AssetType.GoverningToken || assetType == AssetType.UtilityToken)
             //    return false;
             //if (stack.PeekByteArray().Length > 1024)
             //    return false;
-            //string name = Encoding.UTF8.GetString(stack.PopByteArray());
-            //Fixed8 amount = new Fixed8((long)engine.CurrentContext.EvaluationStack.Pop().GetBigInteger());
+            //var name = Encoding.UTF8.GetString(stack.PopByteArray());
+            //var amount = new Fixed8((long)stack.PopBigInteger());
             //if (amount == Fixed8.Zero || amount < -Fixed8.Satoshi) return false;
             //if (assetType == AssetType.Invoice && amount != -Fixed8.Satoshi)
             //    return false;
-            //byte precision = (byte)engine.CurrentContext.EvaluationStack.Pop().GetBigInteger();
+            //var precision = (byte)stack.PopBigInteger();
             //if (precision > 8) return false;
             //if (assetType == AssetType.Share && precision != 0) return false;
             //if (amount != -Fixed8.Satoshi && amount.GetData() % (long)Math.Pow(10, 8 - precision) != 0)
@@ -111,11 +116,11 @@ namespace NeoSharp.Core.VM
             //if (owner.IsInfinity) return false;
             //if (!CheckWitness(engine, owner))
             //    return false;
-            //UInt160 admin = new UInt160(stack.PopByteArray());
-            //UInt160 issuer = new UInt160(stack.PopByteArray());
-            //AssetState asset = _assets.GetOrAdd(tx.Hash, () => new AssetState
+            //var admin = new UInt160(stack.PopByteArray());
+            //var issuer = new UInt160(stack.PopByteArray());
+            //Asset asset = _assets.GetOrAdd(tx.Hash, () => new Asset
             //{
-            //    AssetId = tx.Hash,
+            //    Id = tx.Hash,
             //    AssetType = assetType,
             //    Name = name,
             //    Amount = amount,
@@ -129,7 +134,7 @@ namespace NeoSharp.Core.VM
             //    Expiration = Blockchain.Default.Height + 1 + 2000000,
             //    IsFrozen = false
             //});
-            //engine.CurrentContext.EvaluationStack.Push(StackItem.FromInterface(asset));
+            //stack.PushObject(asset);
             return true;
         }
 
@@ -138,6 +143,7 @@ namespace NeoSharp.Core.VM
             var asset = stack.PopObject<Asset>();
             if (asset == null) return false;
 
+            // TODO: PopBigInteger to byte? 
             var years = (byte)stack.PopBigInteger();
 
             asset = _assets.GetAndChange(asset.Id);
@@ -159,14 +165,20 @@ namespace NeoSharp.Core.VM
             return true;
         }
 
-        private bool Contract_Create(Stack stack)
+        private bool Contract_Create(ExecutionEngineBase engine)
         {
+            var ctx = engine.CurrentContext;
+            if (ctx == null) return false;
+
+            var stack = ctx.EvaluationStack;
+
             var script = stack.PopByteArray();
             if (script.Length > 1024 * 1024) return false;
 
             var parameters = stack.PopByteArray().Select(p => (ContractParameterType)p).ToArray();
             if (parameters.Length > 252) return false;
 
+            // TODO: PopBigInteger to byte? 
             var returnType = (ContractParameterType)(byte)stack.PopBigInteger();
             var metadata = (ContractMetadata)(byte)stack.PopBigInteger();
 
@@ -207,8 +219,7 @@ namespace NeoSharp.Core.VM
                 };
 
                 _contracts.Add(scriptHash, contract);
-                // TODO: get script hash from engine
-                //_contractsCreated.Add(scriptHash, new UInt160(engine.CurrentContext.ScriptHash));
+                _contractsCreated.Add(scriptHash, new UInt160(engine.CurrentContext.ScriptHash));
             }
 
             stack.PushObject(contract);
@@ -216,8 +227,13 @@ namespace NeoSharp.Core.VM
             return true;
         }
 
-        private bool Contract_Migrate(Stack stack)
+        private bool Contract_Migrate(ExecutionEngineBase engine)
         {
+            var ctx = engine.CurrentContext;
+            if (ctx == null) return false;
+
+            var stack = ctx.EvaluationStack;
+
             var script = stack.PopByteArray();
             if (script.Length > 1024 * 1024) return false;
 
@@ -264,36 +280,38 @@ namespace NeoSharp.Core.VM
                 };
 
                 _contracts.Add(scriptHash, contract);
-                // TODO: get script hash from engine
-                //_contractsCreated.Add(scriptHash, new UInt160(engine.CurrentContext.ScriptHash));
-                //if (contract.HasStorage)
-                //{
-                //    foreach (var pair in _storages.Find(engine.CurrentContext.ScriptHash).ToArray())
-                //    {
-                //        _storages.Add(new StorageKey
-                //        {
-                //            ScriptHash = scriptHash,
-                //            Key = pair.Key.Key
-                //        }, new StorageValue
-                //        {
-                //            Value = pair.Value.Value
-                //        });
-                //    }
-                //}
+                _contractsCreated.Add(scriptHash, new UInt160(engine.CurrentContext.ScriptHash));
+                if (contract.HasStorage)
+                {
+                    foreach (var pair in _storages.Find(engine.CurrentContext.ScriptHash).ToArray())
+                    {
+                        _storages.Add(new StorageKey
+                        {
+                            ScriptHash = scriptHash,
+                            Key = pair.Key.Key
+                        }, new StorageValue
+                        {
+                            Value = pair.Value.Value
+                        });
+                    }
+                }
             }
 
             stack.PushObject(contract);
 
-            return Contract_Destroy(stack);
+            return Contract_Destroy(engine);
         }
 
-        private bool Contract_GetStorageContext(Stack stack)
+        private bool Contract_GetStorageContext(ExecutionEngineBase engine)
         {
-            var contract = stack.PopObject<Contract>();
+            var ctx = engine.CurrentContext;
+            if (ctx == null) return false;
 
+            var stack = ctx.EvaluationStack;
+
+            var contract = stack.PopObject<Contract>();
             if (!_contractsCreated.TryGetValue(contract.ScriptHash, out var created)) return false;
-            // TODO: get script hash from engine
-            // if (!created.Equals(new UInt160(engine.CurrentContext.ScriptHash))) return false;
+            if (!created.Equals(new UInt160(engine.CurrentContext.ScriptHash))) return false;
 
             stack.PushObject(new StorageContext
             {
@@ -304,16 +322,23 @@ namespace NeoSharp.Core.VM
             return true;
         }
 
-        private bool Contract_Destroy(Stack engine)
+        private bool Contract_Destroy(ExecutionEngineBase engine)
         {
-            // TODO: get script hash from engine
-            //var hash = new UInt160(engine.CurrentContext.ScriptHash);
-            //var contract = _contracts.TryGet(hash);
-            //if (contract == null) return true;
-            //_contracts.Delete(hash);
-            //if (contract.HasStorage)
-            //    foreach (var pair in _storages.Find(hash.ToArray()))
-            //        _storages.Delete(pair.Key);
+            var ctx = engine.CurrentContext;
+            if (ctx == null) return false;
+
+            var stack = ctx.EvaluationStack;
+
+            var hash = new UInt160(engine.CurrentContext.ScriptHash);
+            var contract = _contracts.TryGet(hash);
+            if (contract == null) return true;
+
+            _contracts.Delete(hash);
+
+            if (contract.HasStorage)
+                foreach (var pair in _storages.Find(hash.ToArray()))
+                    _storages.Delete(pair.Key);
+
             return true;
         }
 

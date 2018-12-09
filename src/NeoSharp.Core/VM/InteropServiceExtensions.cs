@@ -5,7 +5,7 @@ namespace NeoSharp.Core.VM
 {
     public static class InteropServiceExtensions
     {
-        public static void RegisterStackCall(
+        public static void RegisterStackMethod(
             this InteropService interopService,
             string name,
             Func<Stack, bool> handler)
