@@ -386,7 +386,9 @@ namespace NeoSharp.Core.VM
         {
             var hash = new UInt160(stack.PopByteArray());
             var account = Accounts.GetOrAdd(hash, () => new Account(hash));
+
             stack.PushObject(account);
+
             return true;
         }
 
@@ -515,7 +517,7 @@ namespace NeoSharp.Core.VM
             if (block == null) return false;
             if (block.Transactions.Length > EngineMaxArraySize) return false;
 
-            stack.Push(block.Transactions);
+            stack.PushArray(block.Transactions);
 
             return true;
         }
@@ -562,7 +564,7 @@ namespace NeoSharp.Core.VM
             if (transaction.Attributes.Length > EngineMaxArraySize)
                 return false;
 
-            stack.Push(transaction.Attributes);
+            stack.PushArray(transaction.Attributes);
 
             return true;
         }
@@ -574,7 +576,7 @@ namespace NeoSharp.Core.VM
             if (transaction.Inputs.Length > EngineMaxArraySize)
                 return false;
 
-            stack.Push(transaction.Inputs);
+            stack.PushArray(transaction.Inputs);
 
             return true;
         }
@@ -586,7 +588,7 @@ namespace NeoSharp.Core.VM
             if (transaction.Outputs.Length > EngineMaxArraySize)
                 return false;
 
-            stack.Push(transaction.Outputs);
+            stack.PushArray(transaction.Outputs);
 
             return true;
         }
@@ -600,7 +602,7 @@ namespace NeoSharp.Core.VM
                 return false;
 
             var references = _transactionRepository.GetReferences(transaction).Result;
-            stack.Push(transaction.Inputs.Select(i => references[i]).ToArray());
+            stack.PushArray(transaction.Inputs.Select(i => references[i]).ToArray());
 
             return true;
         }
@@ -614,7 +616,7 @@ namespace NeoSharp.Core.VM
             if (outputs.Count() > EngineMaxArraySize)
                 return false;
 
-            stack.Push(outputs.ToArray());
+            stack.PushArray(outputs.ToArray());
 
             return true;
         }

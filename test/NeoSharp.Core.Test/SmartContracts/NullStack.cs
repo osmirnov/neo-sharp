@@ -41,11 +41,6 @@ namespace NeoSharp.Core.Test.SmartContracts
             return null;
         }
 
-        protected override IntegerStackItemBase CreateInteger(byte[] value)
-        {
-            return null;
-        }
-
         protected override InteropStackItemBase<T> CreateInterop<T>(T obj)
         {
             return null;
@@ -63,27 +58,17 @@ namespace NeoSharp.Core.Test.SmartContracts
 
         public override int Count => 0;
 
-        public override int Drop(int count = 0)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override StackItemBase Pop()
-        {
-            throw new NotImplementedException();
-        }
-
         public override void Push(StackItemBase item)
         {
             throw new NotImplementedException();
         }
 
-        public override bool TryPeek(int index, out StackItemBase obj)
+        public override bool TryPeek(int index, out StackItemBase item)
         {
             throw new NotImplementedException();
         }
 
-        public override bool TryPop<TStackItem>(out TStackItem item)
+        public override bool TryPop(out StackItemBase item)
         {
             throw new NotImplementedException();
         }

@@ -62,12 +62,6 @@ namespace NeoSharp.VM
         /// <param name="value">Value</param>
         protected internal abstract IntegerStackItemBase CreateInteger(BigInteger value);
 
-        /// <summary>
-        /// Create IntegerStackItem
-        /// </summary>
-        /// <param name="value">Value</param>
-        protected internal abstract IntegerStackItemBase CreateInteger(byte[] value);
-
         #endregion
 
         public void Push(bool value) => Push(CreateBool(value));
@@ -84,7 +78,7 @@ namespace NeoSharp.VM
 
         public void PushObject<T>(T item) where T : class => Push(CreateInterop(item));
 
-        public void Push<T>(T[] items) where T : class
+        public void PushArray<T>(T[] items) where T : class
         {
             var stackItems = items
                 .Select(CreateInterop)
@@ -105,23 +99,6 @@ namespace NeoSharp.VM
             var stackItem = Peek(index) as InteropStackItemBase<T>;
 
             return stackItem?.Value;
-        }
-
-        /// <summary>
-        /// Obtain the element at `index` position, without consume them
-        /// </summary>
-        /// <param name="index">Index</param>
-        /// <typeparam name="TStackItem">Object type</typeparam>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        /// <returns>Return object</returns>
-        public TStackItem Peek<TStackItem>(int index = 0) where TStackItem : StackItemBase
-        {
-            if (!TryPeek(index, out var stackItem))
-            {
-                throw new ArgumentOutOfRangeException(nameof(index));
-            }
-
-            return (TStackItem)stackItem;
         }
 
         public BigInteger? PopBigInteger()
@@ -183,102 +160,6 @@ namespace NeoSharp.VM
                     })
                     .Where(v => v != null)
                     .ToArray();
-            }
-        }
-
-        /// <summary>
-        /// Pop object casting to this type
-        /// </summary>
-        /// <typeparam name="TStackItem">Object type</typeparam>
-        /// <returns>Return object</returns>
-        public TStackItem Pop<TStackItem>() where TStackItem : StackItemBase
-        {
-            return (TStackItem)Pop();
-        }
-
-        /// <summary>
-        /// Try Pop object casting to this type
-        /// </summary>
-        /// <typeparam name="TStackItem">Object type</typeparam>
-        /// <param name="item">Item</param>
-        /// <returns>Return false if it is something wrong</returns>
-        public abstract bool TryPop<TStackItem>(out TStackItem item) where TStackItem : StackItemBase;
-
-        /// <summary>
-        /// Try pop byte array
-        /// </summary>
-        /// <param name="value">Value</param>
-        /// <returns>Return false if is something wrong or is not convertible to ByteArray</returns>
-        public bool TryPop(out byte[] value)
-        {
-            if (!TryPop<StackItemBase>(out var stackItem))
-            {
-                value = null;
-                return false;
-            }
-
-            using (stackItem)
-            {
-                value = stackItem.ToByteArray();
-                return value != null;
-            }
-        }
-
-        /// <summary>
-        /// Try pop BigInteger
-        /// </summary>
-        /// <param name="value">Value</param>
-        /// <returns>Return false if is something wrong or is not convertible to BigInteger</returns>
-        public bool TryPop(out BigInteger value)
-        {
-            if (TryPop<StackItemBase>(out var stackItem))
-            {
-                using (stackItem)
-                {
-                    if (stackItem is IntegerStackItemBase integer)
-                    {
-                        value = integer.Value;
-                        return true;
-                    }
-
-                    var array = stackItem.ToByteArray();
-                    if (array != null)
-                    {
-                        value = new BigInteger(array);
-                        return true;
-                    }
-                }
-            }
-
-            value = BigInteger.Zero;
-            return false;
-        }
-
-        /// <summary>
-        /// Try pop bool
-        /// </summary>
-        /// <param name="value">Value</param>
-        /// <returns>Return false if is something wrong or is not convertible to bool</returns>
-        public bool TryPop(out bool value)
-        {
-            if (!TryPop<StackItemBase>(out var stackItem))
-            {
-                value = false;
-                return false;
-            }
-
-            using (stackItem)
-            {
-                if (stackItem is BooleanStackItemBase integer)
-                {
-                    value = integer.Value;
-                    return true;
-                }
-
-                var array = stackItem.ToByteArray();
-                value = array != null && array.Length != 0;
-
-                return true;
             }
         }
     }
