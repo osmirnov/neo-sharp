@@ -50,7 +50,7 @@ namespace NeoSharp.VM.NeoVM
 
         public override ArrayStackItemBase CreateArray(IEnumerable<StackItemBase> items = null)
         {
-            return new StackItems.ArrayStackItem(items);
+            return new ArrayStackItem(items);
         }
 
         public override ArrayStackItemBase CreateStruct(IEnumerable<StackItemBase> items = null)
@@ -645,7 +645,7 @@ namespace NeoSharp.VM.NeoVM
                         if (CurrentContext.EvaluationStack.Count == 0) return 1;
 
                         var item = _engine.CurrentContext.EvaluationStack.Peek();
-                        var n = item is Neo.VM.Types.Array array ? array.Count : (int)item.GetBigInteger();
+                        var n = item is Array array ? array.Count : (int)item.GetBigInteger();
 
                         return n < 1 ? 1UL : (ulong)(100 * n);
                     }

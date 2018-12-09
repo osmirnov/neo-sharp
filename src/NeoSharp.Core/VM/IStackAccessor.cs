@@ -25,13 +25,13 @@ namespace NeoSharp.Core.VM
 
         byte[] PeekByteArray(int index = 0);
 
-        T Peek<T>(int index = 0) where T : class;
+        T PeekObject<T>(int index = 0) where T : class;
 
         BigInteger? PopBigInteger();
 
         byte[] PopByteArray();
 
-        T Pop<T>() where T : class;
+        T PopObject<T>() where T : class;
 
         T[] PopArray<T>() where T : class;
     }

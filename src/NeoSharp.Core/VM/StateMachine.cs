@@ -135,7 +135,7 @@ namespace NeoSharp.Core.VM
 
         private bool Asset_Renew(IStackAccessor stack)
         {
-            var asset = stack.Pop<Asset>();
+            var asset = stack.PopObject<Asset>();
             if (asset == null) return false;
 
             var years = (byte)stack.PopBigInteger();
@@ -289,7 +289,7 @@ namespace NeoSharp.Core.VM
 
         private bool Contract_GetStorageContext(IStackAccessor stack)
         {
-            var contract = stack.Pop<Contract>();
+            var contract = stack.PopObject<Contract>();
 
             if (!_contractsCreated.TryGetValue(contract.ScriptHash, out var created)) return false;
             // TODO: get script hash from engine
@@ -319,7 +319,7 @@ namespace NeoSharp.Core.VM
 
         private bool Storage_Put(IStackAccessor stack)
         {
-            var context = stack.Pop<StorageContext>();
+            var context = stack.PopObject<StorageContext>();
             if (context == null) return false;
             if (context.IsReadOnly) return false;
             if (!CheckStorageContext(context)) return false;
@@ -340,7 +340,7 @@ namespace NeoSharp.Core.VM
 
         private bool Storage_Delete(IStackAccessor stack)
         {
-            var context = stack.Pop<StorageContext>();
+            var context = stack.PopObject<StorageContext>();
             if (context == null) return false;
             if (context.IsReadOnly) return false;
             if (!CheckStorageContext(context)) return false;

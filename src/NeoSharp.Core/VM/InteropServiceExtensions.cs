@@ -10,15 +10,12 @@ namespace NeoSharp.Core.VM
             string name,
             Func<IStackAccessor, bool> handler)
         {
-            bool BaseHandler(ExecutionEngineBase engine)
+            bool InvokeHandler(ExecutionEngineBase engine)
             {
-                var ctx = engine.CurrentContext;
-                if (ctx == null) return false;
-
-                return handler(new StackAccessor(engine, ctx));
+                return engine.CurrentContext != null && handler(new StackAccessor(engine));
             }
 
-            interopService.Register(name, BaseHandler);
+            interopService.Register(name, InvokeHandler);
         }
     }
 }

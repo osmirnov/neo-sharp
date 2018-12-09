@@ -15,11 +15,11 @@ namespace NeoSharp.Core.VM
 
         public UInt160 ScriptHash => new UInt160(_context.ScriptHash);
 
-        public StackAccessor(ExecutionEngineBase engine, ExecutionContextBase context)
+        public StackAccessor(ExecutionEngineBase engine)
         {
             _engine = engine;
-            _context = context;
-            _stack = context.EvaluationStack;
+            _context = engine.CurrentContext;
+            _stack = engine.CurrentContext.EvaluationStack;
         }
 
         public void Push(bool value) => _stack.Push(_engine.CreateBool(value));
@@ -45,83 +45,16 @@ namespace NeoSharp.Core.VM
             _stack.Push(_engine.CreateArray(stackItems));
         }
 
-        public byte[] PeekByteArray(int index = 0)
-        {
-            var stackItem = _stack.Peek(index) as ByteArrayStackItemBase;
+        public byte[] PeekByteArray(int index = 0) => _stack.PeekByteArray();
 
-            return stackItem?.Value;
-        }
+        public T PeekObject<T>(int index = 0) where T : class => _stack.PeekObject<T>();
 
-        public T Peek<T>(int index = 0) where T : class
-        {
-            var stackItem = _stack.Peek(index) as InteropStackItemBase<T>;
+        public BigInteger? PopBigInteger() => _stack.PopBigInteger();
 
-            return stackItem?.Value;
-        }
+        public byte[] PopByteArray() => _stack.PopByteArray();
 
-        public BigInteger? PopBigInteger()
-        {
-            var stackItem = _stack.Pop() as IntegerStackItemBase;
+        public T PopObject<T>() where T : class => _stack.PopObject<T>();
 
-            using (stackItem)
-            {
-                return stackItem?.Value;
-            }
-        }
-
-        public byte[] PopByteArray()
-        {
-            var stackItem = _stack.Pop() as ByteArrayStackItemBase;
-
-            using (stackItem)
-            {
-                return stackItem?.Value;
-            }
-        }
-
-        public T Pop<T>() where T : class
-        {
-            var stackItem = _stack.Pop();
-
-            if (stackItem is InteropStackItemBase<T> interop)
-            {
-                using (stackItem)
-                {
-                    return interop?.Value;
-                }
-            }
-            else
-            {
-                // Extract base type
-
-                if (typeof(T).IsAssignableFrom(stackItem.GetType()))
-                {
-                    return (T)(object)stackItem;
-                }
-            }
-
-            throw new ArgumentException(nameof(T));
-        }
-
-        public T[] PopArray<T>() where T : class
-        {
-            var stackItems = _stack.Pop() as ArrayStackItemBase;
-
-            using (stackItems)
-            {
-                return stackItems?
-                    .Select(si =>
-                    {
-                        var stackItem = si as InteropStackItemBase<T>;
-
-                        using (stackItem)
-                        {
-                            return stackItem?.Value;
-                        }
-                    })
-                    .Where(v => v != null)
-                    .ToArray();
-            }
-        }
+        public T[] PopArray<T>() where T : class => _stack.PopArray<T>();
     }
 }

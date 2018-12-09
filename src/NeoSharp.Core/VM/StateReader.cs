@@ -265,7 +265,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Runtime_Notify(IStackAccessor stack)
         {
-            var state = stack.Pop<StackItemBase>();
+            var state = stack.PopObject<StackItemBase>();
 
             _interopService.RaiseOnNotify(new NotifyEventArgs(stack.ScriptHash.ToArray(), state));
 
@@ -409,7 +409,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Header_GetIndex(IStackAccessor stack)
         {
-            var blockBase = stack.Pop<BlockBase>();
+            var blockBase = stack.PopObject<BlockBase>();
             if (blockBase == null) return false;
 
             stack.Push(blockBase.Index);
@@ -419,7 +419,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Header_GetHash(IStackAccessor stack)
         {
-            var blockBase = stack.Pop<BlockBase>();
+            var blockBase = stack.PopObject<BlockBase>();
             if (blockBase == null) return false;
 
             stack.Push(blockBase.Hash.ToArray());
@@ -429,7 +429,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Header_GetVersion(IStackAccessor stack)
         {
-            var blockBase = stack.Pop<BlockBase>();
+            var blockBase = stack.PopObject<BlockBase>();
             if (blockBase == null) return false;
 
             stack.Push(blockBase.Version);
@@ -439,7 +439,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Header_GetPrevHash(IStackAccessor stack)
         {
-            var blockBase = stack.Pop<BlockBase>();
+            var blockBase = stack.PopObject<BlockBase>();
             if (blockBase == null) return false;
 
             stack.Push(blockBase.PreviousBlockHash.ToArray());
@@ -450,7 +450,7 @@ namespace NeoSharp.Core.VM
         protected virtual bool Header_GetMerkleRoot(IStackAccessor stack)
         {
             // TODO: Should MerkleRoot be in BlockBase?
-            var blockBase = stack.Pop<BlockHeader>();
+            var blockBase = stack.PopObject<BlockHeader>();
             if (blockBase == null) return false;
 
             stack.Push(blockBase.MerkleRoot.ToArray());
@@ -460,7 +460,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Header_GetTimestamp(IStackAccessor stack)
         {
-            var blockBase = stack.Pop<BlockBase>();
+            var blockBase = stack.PopObject<BlockBase>();
             if (blockBase == null) return false;
 
             stack.Push(blockBase.Timestamp);
@@ -470,7 +470,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Header_GetConsensusData(IStackAccessor stack)
         {
-            var blockBase = stack.Pop<BlockBase>();
+            var blockBase = stack.PopObject<BlockBase>();
             if (blockBase == null) return false;
 
             stack.Push(blockBase.ConsensusData);
@@ -480,7 +480,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Header_GetNextConsensus(IStackAccessor stack)
         {
-            var blockBase = stack.Pop<BlockBase>();
+            var blockBase = stack.PopObject<BlockBase>();
             if (blockBase == null) return false;
 
             stack.Push(blockBase.NextConsensus.ToArray());
@@ -490,7 +490,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Block_GetTransactionCount(IStackAccessor stack)
         {
-            var block = stack.Pop<Block>();
+            var block = stack.PopObject<Block>();
             if (block == null) return false;
 
             stack.Push(block.Transactions.Length);
@@ -500,7 +500,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Block_GetTransactions(IStackAccessor stack)
         {
-            var block = stack.Pop<Block>();
+            var block = stack.PopObject<Block>();
             if (block == null) return false;
             if (block.Transactions.Length > EngineMaxArraySize) return false;
 
@@ -511,7 +511,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Block_GetTransaction(IStackAccessor stack)
         {
-            var block = stack.Pop<Block>();
+            var block = stack.PopObject<Block>();
             if (block == null) return false;
 
             var index = (int)stack.PopBigInteger();
@@ -526,7 +526,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Transaction_GetHash(IStackAccessor stack)
         {
-            var transaction = stack.Pop<Transaction>();
+            var transaction = stack.PopObject<Transaction>();
             if (transaction == null) return false;
 
             stack.Push(transaction.Hash.ToArray());
@@ -536,7 +536,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Transaction_GetType(IStackAccessor stack)
         {
-            var transaction = stack.Pop<Transaction>();
+            var transaction = stack.PopObject<Transaction>();
             if (transaction == null) return false;
 
             stack.Push((int)transaction.Type);
@@ -546,7 +546,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Transaction_GetAttributes(IStackAccessor stack)
         {
-            var transaction = stack.Pop<Transaction>();
+            var transaction = stack.PopObject<Transaction>();
             if (transaction == null) return false;
             if (transaction.Attributes.Length > EngineMaxArraySize)
                 return false;
@@ -558,7 +558,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Transaction_GetInputs(IStackAccessor stack)
         {
-            var transaction = stack.Pop<Transaction>();
+            var transaction = stack.PopObject<Transaction>();
             if (transaction == null) return false;
             if (transaction.Inputs.Length > EngineMaxArraySize)
                 return false;
@@ -570,7 +570,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Transaction_GetOutputs(IStackAccessor stack)
         {
-            var transaction = stack.Pop<Transaction>();
+            var transaction = stack.PopObject<Transaction>();
             if (transaction == null) return false;
             if (transaction.Outputs.Length > EngineMaxArraySize)
                 return false;
@@ -582,7 +582,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Transaction_GetReferences(IStackAccessor stack)
         {
-            var transaction = stack.Pop<Transaction>();
+            var transaction = stack.PopObject<Transaction>();
             if (transaction == null) return false;
             // TODO: Check refs length?
             if (transaction.Inputs.Length > EngineMaxArraySize)
@@ -596,7 +596,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Transaction_GetUnspentCoins(IStackAccessor stack)
         {
-            var transaction = stack.Pop<Transaction>();
+            var transaction = stack.PopObject<Transaction>();
             if (transaction == null) return false;
 
             var outputs = _transactionRepository.GetUnspent(transaction.Hash).Result;
@@ -610,7 +610,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool InvocationTransaction_GetScript(IStackAccessor stack)
         {
-            var transaction = stack.Pop<InvocationTransaction>();
+            var transaction = stack.PopObject<InvocationTransaction>();
             if (transaction == null) return false;
 
             stack.Push(transaction.Script);
@@ -620,7 +620,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Attribute_GetUsage(IStackAccessor stack)
         {
-            var transactionAttr = stack.Pop<TransactionAttribute>();
+            var transactionAttr = stack.PopObject<TransactionAttribute>();
             if (transactionAttr == null) return false;
 
             stack.Push((int)transactionAttr.Usage);
@@ -630,7 +630,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Attribute_GetData(IStackAccessor stack)
         {
-            var transactionAttr = stack.Pop<TransactionAttribute>();
+            var transactionAttr = stack.PopObject<TransactionAttribute>();
             if (transactionAttr == null) return false;
 
             stack.Push(transactionAttr.Data);
@@ -640,7 +640,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Input_GetHash(IStackAccessor stack)
         {
-            var coinReference = stack.Pop<CoinReference>();
+            var coinReference = stack.PopObject<CoinReference>();
             if (coinReference == null) return false;
 
             stack.Push(coinReference.PrevHash.ToArray());
@@ -650,7 +650,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Input_GetIndex(IStackAccessor stack)
         {
-            var coinReference = stack.Pop<CoinReference>();
+            var coinReference = stack.PopObject<CoinReference>();
             if (coinReference == null) return false;
 
             stack.Push((int)coinReference.PrevIndex);
@@ -660,7 +660,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Output_GetAssetId(IStackAccessor stack)
         {
-            var transactionOutput = stack.Pop<TransactionOutput>();
+            var transactionOutput = stack.PopObject<TransactionOutput>();
             if (transactionOutput == null) return false;
 
             stack.Push(transactionOutput.AssetId.ToArray());
@@ -670,7 +670,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Output_GetValue(IStackAccessor stack)
         {
-            var transactionOutput = stack.Pop<TransactionOutput>();
+            var transactionOutput = stack.PopObject<TransactionOutput>();
             if (transactionOutput == null) return false;
 
             stack.Push(transactionOutput.Value.Value);
@@ -680,7 +680,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Output_GetScriptHash(IStackAccessor stack)
         {
-            var transactionOutput = stack.Pop<TransactionOutput>();
+            var transactionOutput = stack.PopObject<TransactionOutput>();
             if (transactionOutput == null) return false;
 
             stack.Push(transactionOutput.ScriptHash.ToArray());
@@ -690,7 +690,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Account_GetScriptHash(IStackAccessor stack)
         {
-            var account = stack.Pop<Account>();
+            var account = stack.PopObject<Account>();
             if (account == null) return false;
 
             stack.Push(account.ScriptHash.ToArray());
@@ -700,7 +700,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Account_GetVotes(IStackAccessor stack)
         {
-            var account = stack.Pop<Account>();
+            var account = stack.PopObject<Account>();
             if (account == null) return false;
 
             // TODO: it was EncodePoint before. Check with NEO
@@ -711,7 +711,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Account_GetBalance(IStackAccessor stack)
         {
-            var account = stack.Pop<Account>();
+            var account = stack.PopObject<Account>();
             if (account == null) return false;
 
             var assetId = new UInt256(stack.PopByteArray());
@@ -724,7 +724,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Asset_GetAssetId(IStackAccessor stack)
         {
-            var asset = stack.Pop<Asset>();
+            var asset = stack.PopObject<Asset>();
             if (asset == null) return false;
 
             stack.Push(asset.Id.ToArray());
@@ -734,7 +734,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Asset_GetAssetType(IStackAccessor stack)
         {
-            var asset = stack.Pop<Asset>();
+            var asset = stack.PopObject<Asset>();
             if (asset == null) return false;
 
             stack.Push((int)asset.AssetType);
@@ -744,7 +744,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Asset_GetAmount(IStackAccessor stack)
         {
-            var asset = stack.Pop<Asset>();
+            var asset = stack.PopObject<Asset>();
             if (asset == null) return false;
 
             stack.Push(asset.Amount.Value);
@@ -754,7 +754,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Asset_GetAvailable(IStackAccessor stack)
         {
-            var asset = stack.Pop<Asset>();
+            var asset = stack.PopObject<Asset>();
             if (asset == null) return false;
 
             stack.Push(asset.Available.Value);
@@ -764,7 +764,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Asset_GetPrecision(IStackAccessor stack)
         {
-            var asset = stack.Pop<Asset>();
+            var asset = stack.PopObject<Asset>();
             if (asset == null) return false;
 
             stack.Push((int)asset.Precision);
@@ -774,7 +774,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Asset_GetOwner(IStackAccessor stack)
         {
-            var asset = stack.Pop<Asset>();
+            var asset = stack.PopObject<Asset>();
             if (asset == null) return false;
 
             // TODO: it was EncodePoint before. Check with NEO
@@ -785,7 +785,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Asset_GetAdmin(IStackAccessor stack)
         {
-            var asset = stack.Pop<Asset>();
+            var asset = stack.PopObject<Asset>();
             if (asset == null) return false;
 
             stack.Push(asset.Admin.ToArray());
@@ -795,7 +795,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Asset_GetIssuer(IStackAccessor stack)
         {
-            var asset = stack.Pop<Asset>();
+            var asset = stack.PopObject<Asset>();
             if (asset == null) return false;
 
             stack.Push(asset.Issuer.ToArray());
@@ -805,7 +805,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Contract_GetScript(IStackAccessor stack)
         {
-            var contract = stack.Pop<Contract>();
+            var contract = stack.PopObject<Contract>();
             if (contract == null) return false;
 
             stack.Push(contract.Script);
@@ -815,7 +815,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Contract_IsPayable(IStackAccessor stack)
         {
-            var contract = stack.Pop<Contract>();
+            var contract = stack.PopObject<Contract>();
             if (contract == null) return false;
 
             stack.Push(contract.Payable);
@@ -847,7 +847,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Storage_Get(IStackAccessor stack)
         {
-            var storageContext = stack.Pop<StorageContext>();
+            var storageContext = stack.PopObject<StorageContext>();
             if (storageContext == null) return false;
             if (!CheckStorageContext(storageContext)) return false;
 
@@ -865,7 +865,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool Storage_Find(IStackAccessor stack)
         {
-            var storageContext = stack.Pop<StorageContext>();
+            var storageContext = stack.PopObject<StorageContext>();
             if (storageContext == null) return false;
             if (!CheckStorageContext(storageContext)) return false;
 
@@ -903,7 +903,7 @@ namespace NeoSharp.Core.VM
 
         protected virtual bool StorageContext_AsReadOnly(IStackAccessor stack)
         {
-            var storageContext = stack.Pop<StorageContext>();
+            var storageContext = stack.PopObject<StorageContext>();
             if (storageContext == null) return false;
             if (!storageContext.IsReadOnly)
                 storageContext = new StorageContext
